@@ -1,0 +1,2230 @@
+{
+  "applications": [
+    {
+      "id": "app-1a11d4c303f",
+      "name": "E-Commerce Microservice Architecture",
+      "status": "Connected",
+      "statusType": "healthy",
+      "description": "Full multi-tier docker compose deployment",
+      "environment": "Testing (Isolated Sandbox)",
+      "isolation": "Strict Container Isolation Enabled",
+      "servicesCount": 8,
+      "dependenciesCount": 4,
+      "experimentsCount": 0,
+      "activeIssues": 0,
+      "lastExperiment": {
+        "name": "None",
+        "status": "Unexercised",
+        "result": "Ready for initial test",
+        "time": "Just now"
+      },
+      "lastUpdated": "Just now",
+      "repository": "Uploaded local docker-compose.yml",
+      "composeFile": "docker-compose.yml",
+      "composeYaml": "version: '3.8'\n\nservices:\n  api-gateway:\n    image: envoyproxy/envoy:v1.28-latest\n    ports:\n      - \"8080:8080\"\n    depends_on:\n      - auth-service\n      - order-service\n      - catalog-service\n\n  auth-service:\n    image: ecom/auth-service:v2.1\n    ports:\n      - \"8081:8081\"\n\n  order-service:\n    image: ecom/order-service:v3.4\n    ports:\n      - \"8082:8082\"\n\n  payment-service:\n    image: ecom/payment-service:v1.9\n    ports:\n      - \"8083:8083\"\n\n  inventory-service:\n    image: ecom/inventory-service:v2.0\n    ports:\n      - \"8084:8084\"\n\n  catalog-service:\n    image: ecom/catalog-service:v1.5\n    ports:\n      - \"8085:8085\"\n\n  notification-service:\n    image: ecom/notif-worker:v1.2\n    depends_on:\n      - postgres-db\n\n  postgres-db:\n    image: postgres:16-alpine\n    ports:\n      - \"5432:5432\"\n"
+    },
+    {
+      "id": "app-1a11d4bbffb",
+      "name": "E-Commerce Microservice Architecture",
+      "status": "Connected",
+      "statusType": "healthy",
+      "description": "Full multi-tier docker compose deployment",
+      "environment": "Testing (Isolated Sandbox)",
+      "isolation": "Strict Container Isolation Enabled",
+      "servicesCount": 8,
+      "dependenciesCount": 4,
+      "experimentsCount": 0,
+      "activeIssues": 0,
+      "lastExperiment": {
+        "name": "None",
+        "status": "Unexercised",
+        "result": "Ready for initial test",
+        "time": "Just now"
+      },
+      "lastUpdated": "Just now",
+      "repository": "Uploaded local docker-compose.yml",
+      "composeFile": "docker-compose.yml",
+      "composeYaml": "version: '3.8'\n\nservices:\n  api-gateway:\n    image: envoyproxy/envoy:v1.28-latest\n    ports:\n      - \"8080:8080\"\n    depends_on:\n      - auth-service\n      - order-service\n      - catalog-service\n\n  auth-service:\n    image: ecom/auth-service:v2.1\n    ports:\n      - \"8081:8081\"\n\n  order-service:\n    image: ecom/order-service:v3.4\n    ports:\n      - \"8082:8082\"\n\n  payment-service:\n    image: ecom/payment-service:v1.9\n    ports:\n      - \"8083:8083\"\n\n  inventory-service:\n    image: ecom/inventory-service:v2.0\n    ports:\n      - \"8084:8084\"\n\n  catalog-service:\n    image: ecom/catalog-service:v1.5\n    ports:\n      - \"8085:8085\"\n\n  notification-service:\n    image: ecom/notif-worker:v1.2\n    depends_on:\n      - postgres-db\n\n  postgres-db:\n    image: postgres:16-alpine\n    ports:\n      - \"5432:5432\"\n"
+    },
+    {
+      "id": "app-1a11d4b85d5",
+      "name": "Fintech Core Gateway",
+      "status": "Connected",
+      "statusType": "healthy",
+      "description": "High availability payment processing engine",
+      "environment": "Testing (Isolated Sandbox)",
+      "isolation": "Strict Container Isolation Enabled",
+      "servicesCount": 4,
+      "dependenciesCount": 4,
+      "experimentsCount": 0,
+      "activeIssues": 0,
+      "lastExperiment": {
+        "name": "None",
+        "status": "Unexercised",
+        "result": "Ready for initial test",
+        "time": "Just now"
+      },
+      "lastUpdated": "Just now",
+      "repository": "Uploaded local docker-compose.yml",
+      "composeFile": "docker-compose.yml",
+      "composeYaml": "version: '3.8'\n\nservices:\n  ingress-gateway:\n    image: envoyproxy/envoy:v1.28\n    ports:\n      - \"8080:8080\"\n    depends_on:\n      - transaction-service\n      - user-service\n\n  transaction-service:\n    image: payment/tx:v1\n    ports:\n      - \"8082:8082\"\n    depends_on:\n      - postgres-db\n\n  user-service:\n    image: payment/user:v1\n    ports:\n      - \"8081:8081\"\n    depends_on:\n      - postgres-db\n\n  postgres-db:\n    image: postgres:16-alpine\n    ports:\n      - \"5432:5432\"\n"
+    },
+    {
+      "id": "app-1a11d4807f4",
+      "name": "PulseCart",
+      "status": "Connected",
+      "statusType": "healthy",
+      "description": "A lightweight e-commerce microservice system for testing service dependencies, fault propagation, and automated resilience analysis.",
+      "environment": "Testing (Isolated Sandbox)",
+      "isolation": "Strict Container Isolation Enabled",
+      "servicesCount": 7,
+      "dependenciesCount": 6,
+      "experimentsCount": 0,
+      "activeIssues": 0,
+      "lastExperiment": {
+        "name": "None",
+        "status": "Unexercised",
+        "result": "Ready for initial test",
+        "time": "Just now"
+      },
+      "lastUpdated": "Just now",
+      "repository": "Uploaded local docker-compose.yml",
+      "composeFile": "docker-compose.yml",
+      "composeYaml": "version: \"3.8\"\n\nservices:\n  gateway:\n    type: gateway\n    port: 8080\n    depends_on:\n      - auth\n      - orders\n\n  auth:\n    type: microservice\n    port: 8081\n    depends_on:\n      - users-db\n\n  orders:\n    type: microservice\n    port: 8082\n    depends_on:\n      - inventory\n      - payments\n\n  inventory:\n    type: microservice\n    port: 8083\n\n  payments:\n    type: microservice\n    port: 8084\n    depends_on:\n      - payments-db\n\n  users-db:\n    type: database\n    port: 5432\n\n  payments-db:\n    type: database\n    port: 5433"
+    },
+    {
+      "id": "app-1a11d3fccf8",
+      "name": "Fintech Core Gateway",
+      "status": "Connected",
+      "statusType": "healthy",
+      "description": "High availability payment processing engine",
+      "environment": "Testing (Isolated Sandbox)",
+      "isolation": "Strict Container Isolation Enabled",
+      "servicesCount": 4,
+      "dependenciesCount": 4,
+      "experimentsCount": 0,
+      "activeIssues": 0,
+      "lastExperiment": {
+        "name": "None",
+        "status": "Unexercised",
+        "result": "Ready for initial test",
+        "time": "Just now"
+      },
+      "lastUpdated": "Just now",
+      "repository": "Uploaded local docker-compose.yml",
+      "composeFile": "docker-compose.yml",
+      "composeYaml": "version: '3.8'\n\nservices:\n  ingress-gateway:\n    image: envoyproxy/envoy:v1.28\n    ports:\n      - \"8080:8080\"\n    depends_on:\n      - transaction-service\n      - user-service\n\n  transaction-service:\n    image: payment/tx:v1\n    ports:\n      - \"8082:8082\"\n    depends_on:\n      - postgres-db\n\n  user-service:\n    image: payment/user:v1\n    ports:\n      - \"8081:8081\"\n    depends_on:\n      - postgres-db\n\n  postgres-db:\n    image: postgres:16-alpine\n    ports:\n      - \"5432:5432\"\n"
+    },
+    {
+      "id": "app-ecommerce",
+      "name": "E-Commerce Platform",
+      "status": "Operational with warnings",
+      "statusType": "warning",
+      "description": "Distributed microservices architecture powering checkout, cart, payment processing, and inventory catalog in an isolated Docker sandbox.",
+      "environment": "Docker Compose (Isolated Sandbox)",
+      "isolation": "Strict Container Isolation Enabled",
+      "servicesCount": 8,
+      "dependenciesCount": 11,
+      "experimentsCount": 12,
+      "activeIssues": 1,
+      "lastExperiment": {
+        "name": "Payment Service Failure Simulation",
+        "status": "Completed",
+        "result": "Impact Detected",
+        "time": "2 hours ago"
+      },
+      "lastUpdated": "10 minutes ago",
+      "repository": "github.com/engineering/ecommerce-core",
+      "composeFile": "docker-compose.resilience.yml"
+    },
+    {
+      "id": "app-crm",
+      "name": "CRM & Billing Suite",
+      "status": "Operational",
+      "statusType": "healthy",
+      "description": "Customer relations and automated billing dispatch platform running containerized worker queues and relational databases.",
+      "environment": "Docker Compose (Isolated Sandbox)",
+      "isolation": "Strict Container Isolation Enabled",
+      "servicesCount": 6,
+      "dependenciesCount": 7,
+      "experimentsCount": 4,
+      "activeIssues": 0,
+      "lastExperiment": {
+        "name": "Billing DB Replica Timeout",
+        "status": "Completed",
+        "result": "Resilient (Auto-failover OK)",
+        "time": "Yesterday"
+      },
+      "lastUpdated": "1 day ago",
+      "repository": "github.com/engineering/crm-billing",
+      "composeFile": "docker-compose.sandbox.yml"
+    },
+    {
+      "id": "app-streaming",
+      "name": "Real-time Event Ingestion",
+      "status": "Operational",
+      "statusType": "healthy",
+      "description": "High-throughput Kafka and consumer worker cluster validating event streaming resilience under broker network partition.",
+      "environment": "Docker Compose (Isolated Sandbox)",
+      "isolation": "Strict Container Isolation Enabled",
+      "servicesCount": 5,
+      "dependenciesCount": 6,
+      "experimentsCount": 8,
+      "activeIssues": 0,
+      "lastExperiment": {
+        "name": "Kafka Broker 2 Network Drop",
+        "status": "Completed",
+        "result": "Partition Handled",
+        "time": "3 days ago"
+      },
+      "lastUpdated": "3 days ago",
+      "repository": "github.com/engineering/event-pipeline",
+      "composeFile": "docker-compose.cluster.yml"
+    }
+  ],
+  "services_store": {
+    "app-ecommerce": [
+      {
+        "id": "api-gateway",
+        "name": "API Gateway",
+        "type": "Gateway",
+        "status": "degraded",
+        "statusLabel": "Degraded (High Latency)",
+        "port": 8080,
+        "protocol": "HTTP/2 / REST",
+        "cpu": "46%",
+        "memory": "54%",
+        "responseTime": "420ms",
+        "baselineResponseTime": "38ms",
+        "errorRate": "12.4%",
+        "baselineErrorRate": "0.02%",
+        "requestRate": "1,420 req/s",
+        "dependencies": [
+          "auth-service",
+          "order-service",
+          "catalog-service"
+        ],
+        "dependents": [
+          "external-clients"
+        ],
+        "description": "Public ingress reverse-proxy routing client requests with rate limiting and TLS termination.",
+        "runtime": "Envoy / Go 1.22",
+        "containerId": "cnt_gateway_90a"
+      },
+      {
+        "id": "auth-service",
+        "name": "Auth Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8081,
+        "protocol": "gRPC / JSON",
+        "cpu": "18%",
+        "memory": "28%",
+        "responseTime": "19ms",
+        "baselineResponseTime": "18ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "340 req/s",
+        "dependencies": [
+          "postgres-db"
+        ],
+        "dependents": [
+          "api-gateway"
+        ],
+        "description": "Handles JWT verification, session caching, and RBAC token rotation.",
+        "runtime": "Node.js 20 LTS",
+        "containerId": "cnt_auth_88c"
+      },
+      {
+        "id": "order-service",
+        "name": "Order Service",
+        "type": "Microservice",
+        "status": "degraded",
+        "statusLabel": "Degraded (Cascading Delays)",
+        "port": 8082,
+        "protocol": "REST / Internal",
+        "cpu": "64%",
+        "memory": "71%",
+        "responseTime": "1,480ms",
+        "baselineResponseTime": "65ms",
+        "errorRate": "18.6%",
+        "baselineErrorRate": "0.05%",
+        "requestRate": "410 req/s",
+        "dependencies": [
+          "payment-service",
+          "inventory-service",
+          "notification-service",
+          "postgres-db"
+        ],
+        "dependents": [
+          "api-gateway"
+        ],
+        "description": "Coordinates cart checkout, order validation, and transaction orchestrations.",
+        "runtime": "Python 3.11 / FastAPI",
+        "containerId": "cnt_order_44b"
+      },
+      {
+        "id": "payment-service",
+        "name": "Payment Service",
+        "type": "Microservice",
+        "status": "critical",
+        "statusLabel": "FAILED (Active Experiment Target)",
+        "port": 8083,
+        "protocol": "HTTPS / Internal",
+        "cpu": "72%",
+        "memory": "78%",
+        "responseTime": "3,200ms",
+        "baselineResponseTime": "110ms",
+        "errorRate": "34.8%",
+        "baselineErrorRate": "0.1%",
+        "requestRate": "88 req/s",
+        "dependencies": [
+          "postgres-db"
+        ],
+        "dependents": [
+          "order-service"
+        ],
+        "description": "Manages third-party payment tokens, gateway routing, and ledger authorization.",
+        "runtime": "Go 1.22 / Gin",
+        "containerId": "cnt_payment_01f"
+      },
+      {
+        "id": "inventory-service",
+        "name": "Inventory Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8084,
+        "protocol": "gRPC",
+        "cpu": "24%",
+        "memory": "36%",
+        "responseTime": "26ms",
+        "baselineResponseTime": "24ms",
+        "errorRate": "0.1%",
+        "baselineErrorRate": "0.05%",
+        "requestRate": "280 req/s",
+        "dependencies": [
+          "postgres-db"
+        ],
+        "dependents": [
+          "order-service"
+        ],
+        "description": "Real-time stock deduction, SKU warehouse reservation, and item lock management.",
+        "runtime": "Rust / Actix",
+        "containerId": "cnt_inventory_33d"
+      },
+      {
+        "id": "catalog-service",
+        "name": "Product Catalog",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8085,
+        "protocol": "REST",
+        "cpu": "16%",
+        "memory": "32%",
+        "responseTime": "15ms",
+        "baselineResponseTime": "15ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "890 req/s",
+        "dependencies": [
+          "postgres-db"
+        ],
+        "dependents": [
+          "api-gateway"
+        ],
+        "description": "Read-heavy product search, category browsing, and pricing catalog.",
+        "runtime": "Go 1.22",
+        "containerId": "cnt_catalog_12x"
+      },
+      {
+        "id": "notification-service",
+        "name": "Notification Service",
+        "type": "Worker",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8086,
+        "protocol": "Async Worker",
+        "cpu": "14%",
+        "memory": "22%",
+        "responseTime": "48ms",
+        "baselineResponseTime": "45ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "120 msg/s",
+        "dependencies": [
+          "postgres-db"
+        ],
+        "dependents": [
+          "order-service"
+        ],
+        "description": "Asynchronous transactional email, SMS receipt, and push notification dispatcher.",
+        "runtime": "Node.js 20 LTS",
+        "containerId": "cnt_notif_77e"
+      },
+      {
+        "id": "postgres-db",
+        "name": "Database (PostgreSQL)",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 5432,
+        "protocol": "PostgreSQL 16",
+        "cpu": "38%",
+        "memory": "62%",
+        "responseTime": "7ms",
+        "baselineResponseTime": "6ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "1,850 qps",
+        "dependencies": [],
+        "dependents": [
+          "order-service",
+          "payment-service",
+          "inventory-service",
+          "catalog-service",
+          "auth-service",
+          "notification-service"
+        ],
+        "description": "Primary relational database storing transactional orders, users, and audit records.",
+        "runtime": "PostgreSQL 16.2 Alpine",
+        "containerId": "cnt_postgres_db"
+      }
+    ],
+    "app-1a11d3fccf8": [
+      {
+        "id": "ingress-gateway",
+        "name": "Ingress Gateway",
+        "type": "Gateway",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8080,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "transaction-service",
+          "user-service"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (ingress-gateway).",
+        "runtime": "Docker / envoyproxy/envoy:v1.28",
+        "containerId": "cnt_ingress-"
+      },
+      {
+        "id": "transaction-service",
+        "name": "Transaction Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8082,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "postgres-db"
+        ],
+        "dependents": [
+          "ingress-gateway"
+        ],
+        "description": "Isolated container service derived from docker-compose (transaction-service).",
+        "runtime": "Docker / payment/tx:v1",
+        "containerId": "cnt_transact"
+      },
+      {
+        "id": "user-service",
+        "name": "User Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8081,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "postgres-db"
+        ],
+        "dependents": [
+          "ingress-gateway"
+        ],
+        "description": "Isolated container service derived from docker-compose (user-service).",
+        "runtime": "Docker / payment/user:v1",
+        "containerId": "cnt_user-ser"
+      },
+      {
+        "id": "postgres-db",
+        "name": "Postgres Db",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 5432,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "transaction-service",
+          "user-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (postgres-db).",
+        "runtime": "Docker / postgres:16-alpine",
+        "containerId": "cnt_postgres"
+      }
+    ],
+    "app-1a11d4807f4": [
+      {
+        "id": "gateway",
+        "name": "Gateway",
+        "type": "Gateway",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8080,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "auth",
+          "orders"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (gateway).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_gateway"
+      },
+      {
+        "id": "auth",
+        "name": "Auth",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8080,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "users-db"
+        ],
+        "dependents": [
+          "gateway"
+        ],
+        "description": "Isolated container service derived from docker-compose (auth).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_auth"
+      },
+      {
+        "id": "orders",
+        "name": "Orders",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8080,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "inventory",
+          "payments"
+        ],
+        "dependents": [
+          "gateway"
+        ],
+        "description": "Isolated container service derived from docker-compose (orders).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_orders"
+      },
+      {
+        "id": "inventory",
+        "name": "Inventory",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8080,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "orders"
+        ],
+        "description": "Isolated container service derived from docker-compose (inventory).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_inventor"
+      },
+      {
+        "id": "payments",
+        "name": "Payments",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8080,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "payments-db"
+        ],
+        "dependents": [
+          "orders"
+        ],
+        "description": "Isolated container service derived from docker-compose (payments).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_payments"
+      },
+      {
+        "id": "users-db",
+        "name": "Users Db",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8080,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "auth"
+        ],
+        "description": "Isolated container service derived from docker-compose (users-db).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_users-db"
+      },
+      {
+        "id": "payments-db",
+        "name": "Payments Db",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8080,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "payments"
+        ],
+        "description": "Isolated container service derived from docker-compose (payments-db).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_payments"
+      }
+    ],
+    "app-1a11d4b85d5": [
+      {
+        "id": "ingress-gateway",
+        "name": "Ingress Gateway",
+        "type": "Gateway",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8080,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "transaction-service",
+          "user-service"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (ingress-gateway).",
+        "runtime": "Docker / envoyproxy/envoy:v1.28",
+        "containerId": "cnt_ingress-"
+      },
+      {
+        "id": "transaction-service",
+        "name": "Transaction Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8082,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "postgres-db"
+        ],
+        "dependents": [
+          "ingress-gateway"
+        ],
+        "description": "Isolated container service derived from docker-compose (transaction-service).",
+        "runtime": "Docker / payment/tx:v1",
+        "containerId": "cnt_transact"
+      },
+      {
+        "id": "user-service",
+        "name": "User Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8081,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "postgres-db"
+        ],
+        "dependents": [
+          "ingress-gateway"
+        ],
+        "description": "Isolated container service derived from docker-compose (user-service).",
+        "runtime": "Docker / payment/user:v1",
+        "containerId": "cnt_user-ser"
+      },
+      {
+        "id": "postgres-db",
+        "name": "Postgres Db",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 5432,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "transaction-service",
+          "user-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (postgres-db).",
+        "runtime": "Docker / postgres:16-alpine",
+        "containerId": "cnt_postgres"
+      }
+    ],
+    "app-1a11d4bbffb": [
+      {
+        "id": "api-gateway",
+        "name": "Api Gateway",
+        "type": "Gateway",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8080,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "auth-service",
+          "order-service",
+          "catalog-service"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (api-gateway).",
+        "runtime": "Docker / envoyproxy/envoy:v1.28-latest",
+        "containerId": "cnt_api-gate"
+      },
+      {
+        "id": "auth-service",
+        "name": "Auth Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8081,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "api-gateway"
+        ],
+        "description": "Isolated container service derived from docker-compose (auth-service).",
+        "runtime": "Docker / ecom/auth-service:v2.1",
+        "containerId": "cnt_auth-ser"
+      },
+      {
+        "id": "order-service",
+        "name": "Order Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8082,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "api-gateway"
+        ],
+        "description": "Isolated container service derived from docker-compose (order-service).",
+        "runtime": "Docker / ecom/order-service:v3.4",
+        "containerId": "cnt_order-se"
+      },
+      {
+        "id": "payment-service",
+        "name": "Payment Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8083,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (payment-service).",
+        "runtime": "Docker / ecom/payment-service:v1.9",
+        "containerId": "cnt_payment-"
+      },
+      {
+        "id": "inventory-service",
+        "name": "Inventory Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8084,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (inventory-service).",
+        "runtime": "Docker / ecom/inventory-service:v2.0",
+        "containerId": "cnt_inventor"
+      },
+      {
+        "id": "catalog-service",
+        "name": "Catalog Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8085,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "api-gateway"
+        ],
+        "description": "Isolated container service derived from docker-compose (catalog-service).",
+        "runtime": "Docker / ecom/catalog-service:v1.5",
+        "containerId": "cnt_catalog-"
+      },
+      {
+        "id": "notification-service",
+        "name": "Notification Service",
+        "type": "Worker",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8080,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "postgres-db"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (notification-service).",
+        "runtime": "Docker / ecom/notif-worker:v1.2",
+        "containerId": "cnt_notifica"
+      },
+      {
+        "id": "postgres-db",
+        "name": "Postgres Db",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 5432,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "notification-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (postgres-db).",
+        "runtime": "Docker / postgres:16-alpine",
+        "containerId": "cnt_postgres"
+      }
+    ],
+    "app-1a11d4c303f": [
+      {
+        "id": "api-gateway",
+        "name": "Api Gateway",
+        "type": "Gateway",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8080,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "auth-service",
+          "order-service",
+          "catalog-service"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (api-gateway).",
+        "runtime": "Docker / envoyproxy/envoy:v1.28-latest",
+        "containerId": "cnt_api-gate"
+      },
+      {
+        "id": "auth-service",
+        "name": "Auth Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8081,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "api-gateway"
+        ],
+        "description": "Isolated container service derived from docker-compose (auth-service).",
+        "runtime": "Docker / ecom/auth-service:v2.1",
+        "containerId": "cnt_auth-ser"
+      },
+      {
+        "id": "order-service",
+        "name": "Order Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8082,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "api-gateway"
+        ],
+        "description": "Isolated container service derived from docker-compose (order-service).",
+        "runtime": "Docker / ecom/order-service:v3.4",
+        "containerId": "cnt_order-se"
+      },
+      {
+        "id": "payment-service",
+        "name": "Payment Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8083,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (payment-service).",
+        "runtime": "Docker / ecom/payment-service:v1.9",
+        "containerId": "cnt_payment-"
+      },
+      {
+        "id": "inventory-service",
+        "name": "Inventory Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8084,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (inventory-service).",
+        "runtime": "Docker / ecom/inventory-service:v2.0",
+        "containerId": "cnt_inventor"
+      },
+      {
+        "id": "catalog-service",
+        "name": "Catalog Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8085,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "api-gateway"
+        ],
+        "description": "Isolated container service derived from docker-compose (catalog-service).",
+        "runtime": "Docker / ecom/catalog-service:v1.5",
+        "containerId": "cnt_catalog-"
+      },
+      {
+        "id": "notification-service",
+        "name": "Notification Service",
+        "type": "Worker",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8087,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "postgres-db"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (notification-service).",
+        "runtime": "Docker / ecom/notif-worker:v1.2",
+        "containerId": "cnt_notifica"
+      },
+      {
+        "id": "postgres-db",
+        "name": "Postgres Db",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 5432,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "notification-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (postgres-db).",
+        "runtime": "Docker / postgres:16-alpine",
+        "containerId": "cnt_postgres"
+      }
+    ]
+  },
+  "graph_store": {
+    "app-ecommerce": {
+      "nodes": [
+        {
+          "id": "api-gateway",
+          "type": "serviceNode",
+          "position": {
+            "x": 380,
+            "y": 30
+          },
+          "data": {
+            "label": "API Gateway",
+            "serviceType": "Gateway",
+            "status": "degraded",
+            "port": 8080,
+            "responseTime": "420ms",
+            "errorRate": "12.4%",
+            "isTarget": false,
+            "isAffected": true
+          }
+        },
+        {
+          "id": "auth-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 120,
+            "y": 170
+          },
+          "data": {
+            "label": "Auth Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8081,
+            "responseTime": "19ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "catalog-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 640,
+            "y": 170
+          },
+          "data": {
+            "label": "Product Catalog",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8085,
+            "responseTime": "15ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "order-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 380,
+            "y": 170
+          },
+          "data": {
+            "label": "Order Service",
+            "serviceType": "Microservice",
+            "status": "degraded",
+            "port": 8082,
+            "responseTime": "1,480ms",
+            "errorRate": "18.6%",
+            "isTarget": false,
+            "isAffected": true
+          }
+        },
+        {
+          "id": "payment-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 220,
+            "y": 320
+          },
+          "data": {
+            "label": "Payment Service",
+            "serviceType": "Microservice",
+            "status": "critical",
+            "port": 8083,
+            "responseTime": "3,200ms",
+            "errorRate": "34.8%",
+            "isTarget": true,
+            "isAffected": true
+          }
+        },
+        {
+          "id": "inventory-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 440,
+            "y": 320
+          },
+          "data": {
+            "label": "Inventory Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8084,
+            "responseTime": "26ms",
+            "errorRate": "0.1%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "notification-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 660,
+            "y": 320
+          },
+          "data": {
+            "label": "Notification Service",
+            "serviceType": "Worker",
+            "status": "healthy",
+            "port": 8086,
+            "responseTime": "48ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "postgres-db",
+          "type": "serviceNode",
+          "position": {
+            "x": 380,
+            "y": 470
+          },
+          "data": {
+            "label": "Database (Postgres)",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 5432,
+            "responseTime": "7ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e-gw-auth",
+          "source": "api-gateway",
+          "target": "auth-service",
+          "animated": false,
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-gw-catalog",
+          "source": "api-gateway",
+          "target": "catalog-service",
+          "animated": false,
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-gw-order",
+          "source": "api-gateway",
+          "target": "order-service",
+          "animated": true,
+          "className": "edge-degraded-flow",
+          "style": {
+            "stroke": "#D97706",
+            "strokeWidth": 2
+          }
+        },
+        {
+          "id": "e-order-payment",
+          "source": "order-service",
+          "target": "payment-service",
+          "animated": true,
+          "className": "edge-critical-flow",
+          "style": {
+            "stroke": "#DC2626",
+            "strokeWidth": 2.5
+          }
+        },
+        {
+          "id": "e-order-inv",
+          "source": "order-service",
+          "target": "inventory-service",
+          "animated": false,
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-order-notif",
+          "source": "order-service",
+          "target": "notification-service",
+          "animated": false,
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-auth-db",
+          "source": "auth-service",
+          "target": "postgres-db",
+          "animated": false,
+          "style": {
+            "stroke": "#1E293B",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "e-payment-db",
+          "source": "payment-service",
+          "target": "postgres-db",
+          "animated": false,
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-inv-db",
+          "source": "inventory-service",
+          "target": "postgres-db",
+          "animated": false,
+          "style": {
+            "stroke": "#1E293B",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "e-catalog-db",
+          "source": "catalog-service",
+          "target": "postgres-db",
+          "animated": false,
+          "style": {
+            "stroke": "#1E293B",
+            "strokeWidth": 1
+          }
+        },
+        {
+          "id": "e-notif-db",
+          "source": "notification-service",
+          "target": "postgres-db",
+          "animated": false,
+          "style": {
+            "stroke": "#1E293B",
+            "strokeWidth": 1
+          }
+        }
+      ]
+    },
+    "app-1a11d3fccf8": {
+      "nodes": [
+        {
+          "id": "ingress-gateway",
+          "type": "serviceNode",
+          "position": {
+            "x": 140,
+            "y": 30
+          },
+          "data": {
+            "label": "Ingress Gateway",
+            "serviceType": "Gateway",
+            "status": "healthy",
+            "port": 8080,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "transaction-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 170
+          },
+          "data": {
+            "label": "Transaction Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8082,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "user-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 380,
+            "y": 170
+          },
+          "data": {
+            "label": "User Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8081,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "postgres-db",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 470
+          },
+          "data": {
+            "label": "Postgres Db",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 5432,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e-ingress-gateway-transaction-service",
+          "source": "ingress-gateway",
+          "target": "transaction-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-ingress-gateway-user-service",
+          "source": "ingress-gateway",
+          "target": "user-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-transaction-service-postgres-db",
+          "source": "transaction-service",
+          "target": "postgres-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-user-service-postgres-db",
+          "source": "user-service",
+          "target": "postgres-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        }
+      ]
+    },
+    "app-1a11d4807f4": {
+      "nodes": [
+        {
+          "id": "gateway",
+          "type": "serviceNode",
+          "position": {
+            "x": 140,
+            "y": 30
+          },
+          "data": {
+            "label": "Gateway",
+            "serviceType": "Gateway",
+            "status": "healthy",
+            "port": 8080,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "auth",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 170
+          },
+          "data": {
+            "label": "Auth",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8080,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "orders",
+          "type": "serviceNode",
+          "position": {
+            "x": 380,
+            "y": 170
+          },
+          "data": {
+            "label": "Orders",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8080,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "inventory",
+          "type": "serviceNode",
+          "position": {
+            "x": 640,
+            "y": 170
+          },
+          "data": {
+            "label": "Inventory",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8080,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "payments",
+          "type": "serviceNode",
+          "position": {
+            "x": 860,
+            "y": 170
+          },
+          "data": {
+            "label": "Payments",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8080,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "users-db",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 470
+          },
+          "data": {
+            "label": "Users Db",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 8080,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "payments-db",
+          "type": "serviceNode",
+          "position": {
+            "x": 380,
+            "y": 470
+          },
+          "data": {
+            "label": "Payments Db",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 8080,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e-gateway-auth",
+          "source": "gateway",
+          "target": "auth",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-gateway-orders",
+          "source": "gateway",
+          "target": "orders",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-auth-users-db",
+          "source": "auth",
+          "target": "users-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-orders-inventory",
+          "source": "orders",
+          "target": "inventory",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-orders-payments",
+          "source": "orders",
+          "target": "payments",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-payments-payments-db",
+          "source": "payments",
+          "target": "payments-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        }
+      ]
+    },
+    "app-1a11d4b85d5": {
+      "nodes": [
+        {
+          "id": "ingress-gateway",
+          "type": "serviceNode",
+          "position": {
+            "x": 140,
+            "y": 30
+          },
+          "data": {
+            "label": "Ingress Gateway",
+            "serviceType": "Gateway",
+            "status": "healthy",
+            "port": 8080,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "transaction-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 170
+          },
+          "data": {
+            "label": "Transaction Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8082,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "user-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 380,
+            "y": 170
+          },
+          "data": {
+            "label": "User Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8081,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "postgres-db",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 470
+          },
+          "data": {
+            "label": "Postgres Db",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 5432,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e-ingress-gateway-transaction-service",
+          "source": "ingress-gateway",
+          "target": "transaction-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-ingress-gateway-user-service",
+          "source": "ingress-gateway",
+          "target": "user-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-transaction-service-postgres-db",
+          "source": "transaction-service",
+          "target": "postgres-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-user-service-postgres-db",
+          "source": "user-service",
+          "target": "postgres-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        }
+      ]
+    },
+    "app-1a11d4bbffb": {
+      "nodes": [
+        {
+          "id": "api-gateway",
+          "type": "serviceNode",
+          "position": {
+            "x": 140,
+            "y": 30
+          },
+          "data": {
+            "label": "Api Gateway",
+            "serviceType": "Gateway",
+            "status": "healthy",
+            "port": 8080,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "auth-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 170
+          },
+          "data": {
+            "label": "Auth Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8081,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "order-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 380,
+            "y": 170
+          },
+          "data": {
+            "label": "Order Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8082,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "payment-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 640,
+            "y": 170
+          },
+          "data": {
+            "label": "Payment Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8083,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "inventory-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 860,
+            "y": 170
+          },
+          "data": {
+            "label": "Inventory Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8084,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "catalog-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 1120,
+            "y": 170
+          },
+          "data": {
+            "label": "Catalog Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8085,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "notification-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 140,
+            "y": 320
+          },
+          "data": {
+            "label": "Notification Service",
+            "serviceType": "Worker",
+            "status": "healthy",
+            "port": 8080,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "postgres-db",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 470
+          },
+          "data": {
+            "label": "Postgres Db",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 5432,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e-api-gateway-auth-service",
+          "source": "api-gateway",
+          "target": "auth-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-api-gateway-order-service",
+          "source": "api-gateway",
+          "target": "order-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-api-gateway-catalog-service",
+          "source": "api-gateway",
+          "target": "catalog-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-notification-service-postgres-db",
+          "source": "notification-service",
+          "target": "postgres-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        }
+      ]
+    },
+    "app-1a11d4c303f": {
+      "nodes": [
+        {
+          "id": "api-gateway",
+          "type": "serviceNode",
+          "position": {
+            "x": 140,
+            "y": 30
+          },
+          "data": {
+            "label": "Api Gateway",
+            "serviceType": "Gateway",
+            "status": "healthy",
+            "port": 8080,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "auth-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 170
+          },
+          "data": {
+            "label": "Auth Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8081,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "order-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 380,
+            "y": 170
+          },
+          "data": {
+            "label": "Order Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8082,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "payment-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 640,
+            "y": 170
+          },
+          "data": {
+            "label": "Payment Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8083,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "inventory-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 860,
+            "y": 170
+          },
+          "data": {
+            "label": "Inventory Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8084,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "catalog-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 1120,
+            "y": 170
+          },
+          "data": {
+            "label": "Catalog Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8085,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "notification-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 140,
+            "y": 320
+          },
+          "data": {
+            "label": "Notification Service",
+            "serviceType": "Worker",
+            "status": "healthy",
+            "port": 8087,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "postgres-db",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 470
+          },
+          "data": {
+            "label": "Postgres Db",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 5432,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e-api-gateway-auth-service",
+          "source": "api-gateway",
+          "target": "auth-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-api-gateway-order-service",
+          "source": "api-gateway",
+          "target": "order-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-api-gateway-catalog-service",
+          "source": "api-gateway",
+          "target": "catalog-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-notification-service-postgres-db",
+          "source": "notification-service",
+          "target": "postgres-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        }
+      ]
+    }
+  }
+}
