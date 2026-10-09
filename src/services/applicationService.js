@@ -1,86 +1,57 @@
-import { MOCK_APPLICATIONS, MOCK_SERVICES, MOCK_GRAPH_NODES, MOCK_GRAPH_EDGES } from '../data/mockData';
 
-const APPS_STORAGE_KEY = 'faultlens_apps_store';
+import { MOCK_APPLICATIONS } from '../data/mockData';
 
-function getStoredApps() {
-  try {
-    const raw = localStorage.getItem(APPS_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch (e) {
-    // fallback
+const API_BASE = '/api/v1/applications';
+
+async function apiRequest(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.detail || `Request failed: ${response.status}`);
   }
-  return MOCK_APPLICATIONS;
-}
 
-function saveStoredApps(apps) {
-  localStorage.setItem(APPS_STORAGE_KEY, JSON.stringify(apps));
+  return response.json();
 }
 
 export const applicationService = {
   async getApplications() {
-    // FastAPI: GET /api/applications
-    await new Promise((r) => setTimeout(r, 200));
-    return getStoredApps();
+    return apiRequest(API_BASE);
   },
 
   async getApplicationById(id) {
-    // FastAPI: GET /api/applications/:id
-    await new Promise((r) => setTimeout(r, 150));
-    const apps = getStoredApps();
-    const app = apps.find((a) => a.id === id) || apps[0];
-    return app;
+    return apiRequest(`${API_BASE}/${id}`);
   },
 
   async getServices(appId = 'app-ecommerce') {
-    // FastAPI: GET /api/applications/:id/services
-    await new Promise((r) => setTimeout(r, 200));
-    return MOCK_SERVICES[appId] || MOCK_SERVICES['app-ecommerce'];
+    return apiRequest(`${API_BASE}/${appId}/services`);
   },
 
   async getServiceById(appId, serviceId) {
-    // FastAPI: GET /api/applications/:id/services/:serviceId
-    await new Promise((r) => setTimeout(r, 100));
-    const services = MOCK_SERVICES[appId] || MOCK_SERVICES['app-ecommerce'];
-    return services.find((s) => s.id === serviceId) || null;
+    const services = await this.getServices(appId);
+    return services.find((service) => service.id === serviceId) || null;
   },
 
   async getDependencies(appId = 'app-ecommerce') {
-    // FastAPI: GET /api/applications/:id/dependencies
-    await new Promise((r) => setTimeout(r, 250));
-    return {
-      nodes: MOCK_GRAPH_NODES,
-      edges: MOCK_GRAPH_EDGES,
-    };
+    return apiRequest(`${API_BASE}/${appId}/dependencies`);
   },
 
   async connectApplication(appData) {
-    // FastAPI: POST /api/applications/connect
-    await new Promise((r) => setTimeout(r, 500));
-    const current = getStoredApps();
-    const newApp = {
-      id: `app-${Date.now().toString(36)}`,
-      name: appData.name || 'Custom Isolated Application',
-      status: 'Connected',
-      statusType: 'healthy',
-      description: appData.description || 'Imported Docker Compose configuration running in strict container isolation.',
-      environment: `${appData.environment || 'Testing'} (Isolated Sandbox)`,
-      isolation: 'Strict Container Isolation Enabled',
-      servicesCount: 6,
-      dependenciesCount: 7,
-      experimentsCount: 0,
-      activeIssues: 0,
-      lastExperiment: {
-        name: 'None',
-        status: 'Unexercised',
-        result: 'Ready for initial test',
-        time: 'Just now',
-      },
-      lastUpdated: 'Just now',
-      repository: appData.repository || 'Uploaded local compose file',
-      composeFile: 'docker-compose.yml',
-    };
-    current.unshift(newApp);
-    saveStoredApps(current);
-    return newApp;
-  }
+    return apiRequest(`${API_BASE}/connect`, {
+      method: 'POST',
+      body: JSON.stringify({
+        name: appData.name,
+        description: appData.description || '',
+        composeYaml: appData.composeYaml,
+        environment: appData.environment || 'Testing',
+        isolation: appData.isolation ?? true,
+      }),
+    });
+  },
 };

@@ -1,83 +1,58 @@
-import { MOCK_EXPERIMENTS, MOCK_INCIDENT_TIMELINE } from '../data/mockData';
 
-const EXP_STORAGE_KEY = 'faultlens_experiments_store';
+const API_URL = '/api/v1/experiments';
 
-function getStoredExperiments() {
-  try {
-    const raw = localStorage.getItem(EXP_STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch (e) {
-    // fallback
+async function apiRequest(url, options = {}) {
+  const response = await fetch(url, options);
+
+  if (!response.ok) {
+    const error = await response.text();
+    throw new Error(error || `Request failed: ${response.status}`);
   }
-  return MOCK_EXPERIMENTS;
-}
 
-function saveStoredExperiments(experiments) {
-  localStorage.setItem(EXP_STORAGE_KEY, JSON.stringify(experiments));
+  return response.json();
 }
 
 export const experimentService = {
   async getExperiments(appId = null) {
-    // FastAPI: GET /api/experiments?application_id=...
-    await new Promise((r) => setTimeout(r, 200));
-    const all = getStoredExperiments();
-    if (appId) {
-      return all.filter((e) => e.applicationId === appId);
-    }
-    return all;
+    const query = appId
+      ? `?application_id=${encodeURIComponent(appId)}`
+      : '';
+
+    return apiRequest(`${API_URL}${query}`);
   },
 
   async getExperimentById(id) {
-    // FastAPI: GET /api/experiments/:id
-    await new Promise((r) => setTimeout(r, 150));
-    const all = getStoredExperiments();
-    return all.find((e) => e.id === id) || all[0];
+    return apiRequest(`${API_URL}/${encodeURIComponent(id)}`);
   },
 
   async createExperiment(data) {
-    // FastAPI: POST /api/experiments
-    await new Promise((r) => setTimeout(r, 300));
-    const all = getStoredExperiments();
-    const newExp = {
-      id: `exp-${Date.now().toString(36)}`,
-      name: data.name || `${data.targetServiceName || 'Service'} ${data.faultType} Test`,
-      applicationId: data.applicationId || 'app-ecommerce',
-      applicationName: data.applicationName || 'E-Commerce Platform',
-      targetServiceId: data.targetServiceId || 'payment-service',
-      targetServiceName: data.targetServiceName || 'Payment Service',
-      faultType: data.faultType || 'Service Failure',
-      severity: data.severity || 'High',
-      duration: Number(data.duration) || 60,
-      elapsed: 0,
-      status: 'Running',
-      result: 'Active Telemetry Streaming',
-      confidence: 'Evaluating...',
-      date: 'Just now',
-      timestamp: new Date().toISOString(),
-      description: data.description || 'Controlled fault injection executed in isolated sandbox environment.',
-      environment: 'Docker Compose (Isolated)',
-    };
-    all.unshift(newExp);
-    saveStoredExperiments(all);
-    return newExp;
+    return apiRequest(API_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data),
+    });
   },
 
   async getTimeline(experimentId) {
-    // FastAPI: GET /api/experiments/:id/timeline
-    await new Promise((r) => setTimeout(r, 150));
-    return MOCK_INCIDENT_TIMELINE;
+    return apiRequest(
+      `${API_URL}/${encodeURIComponent(experimentId)}/timeline`
+    );
   },
 
   async stopExperiment(id) {
-    // FastAPI: POST /api/experiments/:id/stop
-    await new Promise((r) => setTimeout(r, 200));
-    const all = getStoredExperiments();
-    const exp = all.find((e) => e.id === id);
-    if (exp) {
-      exp.status = 'Completed';
-      exp.result = 'Stopped by Operator';
-      saveStoredExperiments(all);
-    }
-    return exp;
-  }
+    return apiRequest(
+      `${API_URL}/${encodeURIComponent(id)}/stop`,
+      { method: 'POST' }
+    );
+  },
+
+  
+async completeExperiment(id) {
+  return apiRequest(
+    `${API_URL}/${encodeURIComponent(id)}/complete`,
+    { method: 'POST' }
+  );
+},
 };

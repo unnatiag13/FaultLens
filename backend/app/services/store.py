@@ -284,6 +284,7 @@ class Store:
         self.graph_store: Dict[str, Dict[str, Any]] = {
             "app-ecommerce": dict(SEED_GRAPH_ECOMMERCE)
         }
+        self.experiments: List[Dict[str, Any]] = []
         self._load_from_disk()
 
     def _load_from_disk(self):
@@ -297,6 +298,8 @@ class Store:
                         self.services_store = data["services_store"]
                     if "graph_store" in data:
                         self.graph_store = data["graph_store"]
+                    if "experiments" in data:
+                        self.experiments = data["experiments"]
             except Exception as e:
                 print(f"Error loading store from disk: {e}")
 
@@ -307,7 +310,8 @@ class Store:
                 json.dump({
                     "applications": self.applications,
                     "services_store": self.services_store,
-                    "graph_store": self.graph_store
+                    "graph_store": self.graph_store,
+                    "experiments": self.experiments
                 }, f, indent=2)
         except Exception as e:
             print(f"Error saving store to disk: {e}")

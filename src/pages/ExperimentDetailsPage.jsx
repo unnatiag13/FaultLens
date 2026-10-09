@@ -30,7 +30,7 @@ export function ExperimentDetailsPage() {
   const [loading, setLoading] = useState(true);
   const [experiment, setExperiment] = useState(null);
   const [timeline, setTimeline] = useState([]);
-  const [elapsed, setElapsed] = useState(24);
+  const [elapsed, setElapsed] = useState(0);
   const [duration, setDuration] = useState(60);
   const [isRunning, setIsRunning] = useState(false);
 
@@ -49,11 +49,7 @@ export function ExperimentDetailsPage() {
           setDuration(exp.duration || 60);
           const running = exp.status === 'Running';
           setIsRunning(running);
-          if (running) {
-            setElapsed(1);
-          } else {
-            setElapsed(exp.duration || 60);
-          }
+          setElapsed(exp.elapsed || 0);
         }
       } catch (e) {
         console.error('Failed to load experiment details', e);
@@ -67,38 +63,65 @@ export function ExperimentDetailsPage() {
     };
   }, [id]);
 
-  // Live timer interval if experiment is running
-  useEffect(() => {
-    let interval = null;
-    if (isRunning && elapsed < duration) {
-      interval = setInterval(() => {
-        setElapsed((prev) => {
-          if (prev + 1 >= duration) {
-            setIsRunning(false);
-            addToast('Experiment Completed', 'Controlled fault window ended. Aggregating root-cause signals.', 'info');
-            return duration;
-          }
-          return prev + 1;
-        });
-      }, 1000);
-    }
-    return () => {
-      if (interval) clearInterval(interval);
-    };
-  }, [isRunning, elapsed, duration, addToast]);
 
-  const handleStop = async () => {
+const handleStop = async () => {
+  try {
+    const updated = await experimentService.stopExperiment(id);
+    setExperiment(updated);
+    setIsRunning(false);
+    addToast(
+      'Experiment Stopped',
+      'The experiment record was marked as stopped. No actual fault was executed.',
+      'warning'
+    );
+  } catch (e) {
+    addToast('Error', e.message, 'error');
+  }
+};
+
+  // Live timer interval if experiment is running
+  
+useEffect(() => {
+  if (!isRunning || elapsed >= duration) return;
+
+  const interval = setInterval(() => {
+    setElapsed((prev) => Math.min(prev + 1, duration));
+  }, 1000);
+
+  return () => clearInterval(interval);
+}, [isRunning, elapsed, duration]);
+
+useEffect(() => {
+  if (!isRunning || elapsed < duration) return;
+
+  let cancelled = false;
+
+  async function completeExperiment() {
     try {
-      await experimentService.stopExperiment(id);
-      setIsRunning(false);
-      addToast('Experiment Aborted', 'Immediate SIGCONT / sandbox process restoration completed.', 'warning');
-      if (experiment) {
-        setExperiment((prev) => ({ ...prev, status: 'Completed', result: 'Manually Restored' }));
+      const updated = await experimentService.completeExperiment(id);
+
+      if (!cancelled) {
+        setExperiment(updated);
+        setIsRunning(false);
+        addToast(
+          'Experiment Window Ended',
+          updated.result || 'Experiment window ended.',
+          'info'
+      );
       }
     } catch (e) {
-      addToast('Error', e.message, 'error');
+      if (!cancelled) {
+        addToast('Status Update Failed', e.message, 'error');
+      }
     }
-  };
+  }
+
+    completeExperiment();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isRunning, elapsed, duration, id, addToast]);
 
   const formatSeconds = (sec) => {
     const m = Math.floor(sec / 60);
@@ -128,7 +151,7 @@ export function ExperimentDetailsPage() {
         ]}
         badge={
           <Badge variant={isRunning ? 'running' : 'completed'} size="sm">
-            {isRunning ? '● RUNNING IN SANDBOX' : 'COMPLETED'}
+            {isRunning ? '● RUNNING -TIMER ONLY' : 'COMPLETED'}
           </Badge>
         }
         actions={
@@ -168,7 +191,7 @@ export function ExperimentDetailsPage() {
 
           {/* Elapsed */}
           <div className="space-y-1 pt-4 sm:pt-0">
-            <span className="text-[10px] uppercase font-mono text-slate-400">Elapsed Injection Time</span>
+            <span className="text-[10px] uppercase font-mono text-slate-400">Elapsed Experiment Time</span>
             <p className="text-3xl font-extrabold font-mono text-cyan-400">
               {formatSeconds(elapsed)}
             </p>
@@ -182,7 +205,7 @@ export function ExperimentDetailsPage() {
               {formatSeconds(remaining)}
             </p>
             <span className="text-[11px] text-slate-500 font-mono">
-              {remaining === 0 ? 'Teardown Completed' : 'Auto Sandbox Reset'}
+              {remaining === 0 ? 'Teardown Completed' : 'Configured Window'}
             </span>
           </div>
         </div>
@@ -208,7 +231,7 @@ export function ExperimentDetailsPage() {
             </div>
             <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Streaming Telemetry</span>
+              <span>Telemetry Not Connected</span>
             </div>
           </div>
         </CardHeader>
@@ -243,9 +266,9 @@ export function ExperimentDetailsPage() {
       {!isRunning && (
         <div className="p-5 rounded-xl bg-space-900 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h4 className="text-sm font-bold text-white">Resilience Report Ready</h4>
+            <h4 className="text-sm font-bold text-white">Experiment Window Ended</h4>
             <p className="text-xs text-slate-400 mt-0.5">
-              Identified 1 Probable Root Cause with 94% confidence score. AI remediation patch prepared for developer review.
+              Experiment configuration and timing are recorded. Root-cause analysis and AI remediation are not implemented yet.
             </p>
           </div>
           <div className="flex items-center gap-2">

@@ -1,6 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.applications import router as applications_router
+from app.api.v1.experiments import router as experiments_router
+from app.api.v1.docker_faults import router as docker_faults_router
 
 app = FastAPI(
     title="FaultLens Backend API",
@@ -20,6 +22,8 @@ app.add_middleware(
 # Register API Routers
 app.include_router(applications_router)
 app.include_router(applications_router, prefix="/api")  # Alias for /api/applications
+app.include_router(experiments_router)
+app.include_router(docker_faults_router)
 
 @app.get("/")
 async def root():

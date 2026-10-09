@@ -1,0 +1,24 @@
+
+services:
+  frontend:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+
+  backend:
+    image: python:3.12-slim
+    command:
+      - python
+      - -c
+      - "import time; print('Demo backend service running', flush=True); time.sleep(3600)"
+    depends_on:
+      - database
+
+  database:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: faultlens_demo
+      POSTGRES_USER: demo_user
+      POSTGRES_PASSWORD: demo_password

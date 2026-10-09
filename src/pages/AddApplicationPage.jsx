@@ -296,12 +296,14 @@ export function AddApplicationPage() {
             {/* Services Discovered */}
             <Card>
               <CardHeader>
-                <CardTitle>Services Discovered (6)</CardTitle>
+                <CardTitle>
+  Services Discovered ({createdApp?.discoveredServices?.length ?? createdApp?.servicesCount ?? 0})
+</CardTitle>
                 <CardDescription>Identified processes with exposed ports and health endpoints</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 font-mono text-xs">
-                  {discoveredServices.map((srv, idx) => (
+                  {(createdApp?.discoveredServices ?? []).map((srv, idx) => (
                     <div key={idx} className="flex items-center gap-2 p-2 rounded bg-space-950 border border-slate-800 text-slate-200">
                       <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
                       <span>{srv}</span>
@@ -314,12 +316,14 @@ export function AddApplicationPage() {
             {/* Dependencies Discovered */}
             <Card>
               <CardHeader>
-                <CardTitle>Dependencies Discovered (5)</CardTitle>
+                <CardTitle>
+  Dependencies Discovered ({createdApp?.discoveredDependencies?.length ?? createdApp?.dependenciesCount ?? 0})
+</CardTitle>
                 <CardDescription>Mapped communication edges and container link cascades</CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 font-mono text-xs">
-                  {discoveredDependencies.map((dep, idx) => (
+                  {(createdApp?.discoveredDependencies ?? []).map((dep, idx) => (
                     <div key={idx} className="flex items-center gap-2 p-2 rounded bg-space-950 border border-slate-800 text-brand-cyan">
                       <span className="text-slate-400">→</span>
                       <span>{dep}</span>

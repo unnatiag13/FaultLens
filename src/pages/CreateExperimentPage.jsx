@@ -28,10 +28,12 @@ export function CreateExperimentPage() {
   const { addToast } = useToast();
 
   const queryParams = new URLSearchParams(location.search);
-  const initialTargetService = queryParams.get('targetService') || 'payment-service';
+  
+  const initialTargetService = queryParams.get('targetService') || '';
   const initialFault = queryParams.get('fault') || 'Service Failure';
 
-  const [applicationId, setApplicationId] = useState(selectedApp?.id || 'app-ecommerce');
+  const [applicationId, setApplicationId] = useState(selectedApp?.id || '');
+
   const [targetServiceId, setTargetServiceId] = useState(initialTargetService);
   const [faultType, setFaultType] = useState(initialFault);
   const [duration, setDuration] = useState('60');
@@ -41,20 +43,32 @@ export function CreateExperimentPage() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    async function loadAppServices() {
-      try {
-        const srvs = await applicationService.getServices(applicationId);
-        setServices(srvs);
-        if (srvs.length > 0 && !srvs.find((s) => s.id === targetServiceId)) {
-          setTargetServiceId(srvs[0].id);
-        }
-      } catch (e) {
-        console.error('Failed to load services', e);
+  
+useEffect(() => {
+  async function loadAppServices() {
+    try {
+      const srvs = await applicationService.getServices(applicationId);
+      setServices(srvs);
+
+      if (srvs.length > 0 && !srvs.find((s) => s.id === targetServiceId)) {
+        setTargetServiceId(srvs[0].id);
+      } else if (srvs.length === 0) {
+        setTargetServiceId('');
       }
+    } catch (e) {
+      console.error('Failed to load services', e);
+      setServices([]);
+      setTargetServiceId('');
     }
+  }
+
+  if (applicationId) {
     loadAppServices();
-  }, [applicationId]);
+  } else {
+    setServices([]);
+    setTargetServiceId('');
+  }
+}, [applicationId]);
 
   const selectedTargetService = services.find((s) => s.id === targetServiceId);
   const selectedAppObj = applications.find((a) => a.id === applicationId) || selectedApp;
@@ -67,12 +81,20 @@ export function CreateExperimentPage() {
   const handleExecuteExperiment = async () => {
     setIsSubmitting(true);
     try {
-      const newExp = await experimentService.createExperiment({
-        name: `${selectedTargetService?.name || 'Payment Service'} ${faultType} Simulation`,
+
+      console.log({
         applicationId,
-        applicationName: selectedAppObj?.name || 'E-Commerce Platform',
         targetServiceId,
-        targetServiceName: selectedTargetService?.name || 'Payment Service',
+        faultType,
+        selectedApp: selectedAppObj?.name,
+        selectedService: selectedTargetService?.name,
+    });
+      const newExp = await experimentService.createExperiment({
+        name: `${selectedTargetService?.name || 'Service'} ${faultType} Simulation`,
+        applicationId,
+        applicationName: selectedAppObj?.name || 'Application',
+        targetServiceId,
+        targetServiceName: selectedTargetService?.name || 'Service',
         faultType,
         severity,
         duration,
