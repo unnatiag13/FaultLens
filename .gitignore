@@ -1,1 +1,75 @@
-node_modules
+# =========================
+# Node / React
+# =========================
+node_modules/
+dist/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment variables
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# =========================
+# Python / FastAPI
+# =========================
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Pytest
+.pytest_cache/
+
+# Coverage
+.coverage
+htmlcov/
+
+# Python cache
+*.pyo
+*.pyd
+
+# =========================
+# IDEs
+# =========================
+.vscode/
+.idea/
+
+# =========================
+# OS Files
+# =========================
+.DS_Store
+Thumbs.db
+
+# =========================
+# Project Specific
+# =========================
+
+# Keep runtime/generated data out of git
+backend/scratch/
+
+# If backend/data contains generated uploads/models,
+# uncomment next line:
+# backend/data/
+
+# Status / temp files
+PROJECT_STATUS.md
+
+# =========================
+# Misc
+# =========================
+*.log
+*.tmp
