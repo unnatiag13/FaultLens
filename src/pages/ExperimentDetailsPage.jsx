@@ -71,7 +71,7 @@ const handleStop = async () => {
     setIsRunning(false);
     addToast(
       'Experiment Stopped',
-      'The experiment record was marked as stopped. No actual fault was executed.',
+      updated.result || 'Experiment stopped successfully.',
       'warning'
     );
   } catch (e) {
@@ -151,7 +151,15 @@ useEffect(() => {
         ]}
         badge={
           <Badge variant={isRunning ? 'running' : 'completed'} size="sm">
-            {isRunning ? '● RUNNING -TIMER ONLY' : 'COMPLETED'}
+            
+          {isRunning
+            ? (experiment?.dockerFaultExecuted
+              ? '● RUNNING - FAULT INJECTED'
+              : '● RUNNING')
+            : (experiment?.result === 'Stopped by Operator'
+              ? 'STOPPED'
+              : (experiment?.status || 'COMPLETED').toUpperCase())}
+
           </Badge>
         }
         actions={
@@ -266,9 +274,19 @@ useEffect(() => {
       {!isRunning && (
         <div className="p-5 rounded-xl bg-space-900 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <h4 className="text-sm font-bold text-white">Experiment Window Ended</h4>
+            
+            <h4 className="text-sm font-bold text-white">
+              {experiment?.result === 'Stopped by Operator'
+                ? 'Experiment Stopped'
+                : 'Experiment Window Ended'}
+            </h4>
+
+
             <p className="text-xs text-slate-400 mt-0.5">
-              Experiment configuration and timing are recorded. Root-cause analysis and AI remediation are not implemented yet.
+              {experiment?.result || 'Experiment completed.'}
+              {experiment?.dockerFaultExecuted &&
+                ' Frontend recovery was executed.'}
+              {' Root-cause analysis and AI remediation are not implemented yet.'}
             </p>
           </div>
           <div className="flex items-center gap-2">

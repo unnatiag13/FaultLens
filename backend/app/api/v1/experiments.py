@@ -10,6 +10,10 @@ from app.services.store import store_instance
 from app.api.v1.docker_faults import (
     execute_demo_frontend_fault,
     recover_demo_frontend,
+    execute_demo_backend_fault,
+    recover_demo_backend,
+    execute_demo_database_fault,
+    recover_demo_database,
 )
 
 DEMO_APPLICATION_ID = "app-1a1204bcde7"
@@ -90,7 +94,7 @@ async def create_experiment(payload: ExperimentCreate):
     if (
         payload.applicationId == DEMO_APPLICATION_ID
         and (
-            payload.targetServiceId != DEMO_FRONTEND_SERVICE_ID
+            payload.targetServiceId not in {"frontend", "backend", "database"}
             or payload.faultType != "Service Failure"
         )
     ):
@@ -98,19 +102,28 @@ async def create_experiment(payload: ExperimentCreate):
             status_code=400,
             detail=(
                 "Actual fault injection currently supports only "
-                "Service Failure on the Demo app Frontend."
+                "Service Failure on the Demo app Frontend ,Backend, and Database."
             )
         )
 
+    
     docker_fault_executed = False
 
     if (
         payload.applicationId == DEMO_APPLICATION_ID
-        and payload.targetServiceId == DEMO_FRONTEND_SERVICE_ID
         and payload.faultType == "Service Failure"
     ):
-        execute_demo_frontend_fault(payload.faultType)
-        docker_fault_executed = True
+        if payload.targetServiceId == "frontend":
+            execute_demo_frontend_fault(payload.faultType)
+            docker_fault_executed = True
+
+        elif payload.targetServiceId == "backend":
+            execute_demo_backend_fault(payload.faultType)
+            docker_fault_executed = True
+
+        elif payload.targetServiceId == "database":
+            execute_demo_database_fault(payload.faultType)
+            docker_fault_executed = True
 
     now = datetime.now().astimezone().isoformat()
 
@@ -184,9 +197,18 @@ async def stop_experiment(experiment_id: str):
     for experiment in store_instance.experiments:
         if experiment.get("id") == experiment_id:
             if experiment.get("status") == "Running":
+
+                
                 if experiment.get("dockerFaultExecuted"):
-                    recover_demo_frontend()
-                experiment["status"] = "Completed"
+                    if experiment.get("targetServiceId") == "frontend":
+                        recover_demo_frontend()
+                    elif experiment.get("targetServiceId") == "backend":
+                        recover_demo_backend()
+                    elif experiment.get("targetServiceId") == "database":
+                        recover_demo_database()
+
+
+                experiment["status"] = "Stopped"
                 experiment["result"] = "Stopped by Operator"
                 experiment["timestampUpdated"] = (
                     datetime.now().astimezone().isoformat()
@@ -207,8 +229,16 @@ async def complete_experiment(experiment_id: str):
     for experiment in store_instance.experiments:
         if experiment.get("id") == experiment_id:
             if experiment.get("status") == "Running":
+                
                 if experiment.get("dockerFaultExecuted"):
-                    recover_demo_frontend()
+                    if experiment.get("targetServiceId") == "frontend":
+                        recover_demo_frontend()
+                    elif experiment.get("targetServiceId") == "backend":
+                        recover_demo_backend()
+                    elif experiment.get("targetServiceId") == "database":
+                        recover_demo_database()
+
+
                 experiment["status"] = "Completed"
                 experiment["elapsed"] = experiment.get("duration", 60)
                 experiment["result"] = (

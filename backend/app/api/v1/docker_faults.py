@@ -13,14 +13,14 @@ PROJECT_ROOT = Path(__file__).resolve().parents[4]
 COMPOSE_FILE = PROJECT_ROOT / "faultlens-demo-compose.yml"
 PROJECT_NAME = "faultlens-demo"
 
-ALLOWED_SERVICES = {"frontend"}
+ALLOWED_SERVICES = {"frontend", "backend", "database"}
 
 
 def run_compose(service: str, action: str):
     if service not in ALLOWED_SERVICES:
         raise HTTPException(
             status_code=400,
-            detail="Only the demo frontend service is allowed."
+            detail="Only the demo frontend, backend, and database services are allowed."
         )
 
     if not COMPOSE_FILE.is_file():
@@ -93,6 +93,24 @@ def recover_demo_frontend():
     return run_compose("frontend", "start")
 
 
+def execute_demo_backend_fault(fault_type: str):
+    if fault_type != "Service Failure":
+        raise HTTPException(
+            status_code=400,
+            detail=(
+                "Currently only Service Failure is supported "
+                "for the demo backend."
+            )
+        )
+
+    return run_compose("backend", "stop")
+
+
+def recover_demo_backend():
+    return run_compose("backend", "start")
+
+
+
 @router.post("/frontend/stop")
 async def stop_demo_frontend():
     return run_compose("frontend", "stop")
@@ -101,3 +119,16 @@ async def stop_demo_frontend():
 @router.post("/frontend/start")
 async def start_demo_frontend():
     return run_compose("frontend", "start")
+
+def execute_demo_database_fault(fault_type: str):
+    if fault_type != "Service Failure":
+        raise HTTPException(
+            status_code=400,
+            detail="Only Service Failure is supported for the demo database."
+        )
+
+    return run_compose("database", "stop")
+
+
+def recover_demo_database():
+    return run_compose("database", "start")
