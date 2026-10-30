@@ -204,14 +204,14 @@ export function ExperimentDetailsPage() {
             </Button>
           ) : (
             <div className="flex items-center gap-2">
-              <Link to="/analysis/impact">
+              <Link to={experiment?.id ? `/analysis/impact?experimentId=${experiment.id}` : '/analysis/impact'}>
                 <Button variant="secondary" size="sm" icon={Zap}>
                   Impact Analysis
                 </Button>
               </Link>
-              <Link to="/analysis/root-cause">
+              <Link to={experiment?.id ? `/analysis/root-cause?experimentId=${experiment.id}` : '/analysis/root-cause'}>
                 <Button variant="primary" size="sm" icon={HelpCircle}>
-                  Root Cause (94%)
+                  Root Cause Analysis
                 </Button>
               </Link>
             </div>

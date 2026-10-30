@@ -53,9 +53,9 @@ async def get_experiments(application_id: Optional[str] = None):
 
 @router.get("/{experiment_id}")
 async def get_experiment(experiment_id: str):
-    for experiment in store_instance.experiments:
-        if experiment.get("id") == experiment_id:
-            return experiment
+    experiment = store_instance.get_experiment_by_id(experiment_id)
+    if experiment:
+        return experiment
 
     raise HTTPException(
         status_code=404,
@@ -175,13 +175,7 @@ async def create_experiment(payload: ExperimentCreate):
 
 @router.get("/{experiment_id}/timeline")
 async def get_experiment_timeline(experiment_id: str):
-    experiment = next(
-        (
-            exp for exp in store_instance.experiments
-            if exp.get("id") == experiment_id
-        ),
-        None
-    )
+    experiment = store_instance.get_experiment_by_id(experiment_id)
 
     if not experiment:
         raise HTTPException(

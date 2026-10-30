@@ -274,6 +274,117 @@ SEED_GRAPH_ECOMMERCE = {
     ]
 }
 
+SEED_EXPERIMENTS = [
+    {
+        "id": "exp-101",
+        "name": "Payment Service Failure Simulation",
+        "applicationId": "app-ecommerce",
+        "applicationName": "E-Commerce Platform",
+        "targetServiceId": "payment-service",
+        "targetServiceName": "Payment Service",
+        "faultType": "Service Failure",
+        "severity": "High",
+        "duration": 60,
+        "elapsed": 60,
+        "status": "Recovered",
+        "result": "Impact Detected",
+        "confidence": "Evaluated (Active Topology)",
+        "date": "Earlier today",
+        "timestamp": "2026-10-30T12:04:20+00:00",
+        "description": "Simulate complete payment gateway service crash in isolated environment to observe checkout failure cascades.",
+        "environment": "Docker Compose (Isolated)",
+        "dockerFaultExecuted": False,
+        "affectedServices": ["order-service", "api-gateway", "external-clients"],
+        "levelMap": {
+            "payment-service": 0,
+            "order-service": 1,
+            "api-gateway": 2,
+            "external-clients": 3
+        }
+    },
+    {
+        "id": "exp-102",
+        "name": "Order Service High Latency Test",
+        "applicationId": "app-ecommerce",
+        "applicationName": "E-Commerce Platform",
+        "targetServiceId": "order-service",
+        "targetServiceName": "Order Service",
+        "faultType": "High Latency",
+        "severity": "Medium",
+        "duration": 90,
+        "elapsed": 90,
+        "status": "Recovered",
+        "result": "Cascading Delays Propagated to API Gateway",
+        "confidence": "Evaluated (Active Topology)",
+        "date": "Yesterday",
+        "timestamp": "2026-10-29T16:30:00+00:00",
+        "description": "Inject 1500ms jitter and network delay on order fulfillment handler.",
+        "environment": "Docker Compose (Isolated)",
+        "dockerFaultExecuted": False,
+        "affectedServices": ["api-gateway", "external-clients"],
+        "levelMap": {
+            "order-service": 0,
+            "api-gateway": 1,
+            "external-clients": 2
+        }
+    },
+    {
+        "id": "exp-103",
+        "name": "PostgreSQL Connection Exhaustion",
+        "applicationId": "app-ecommerce",
+        "applicationName": "E-Commerce Platform",
+        "targetServiceId": "postgres-db",
+        "targetServiceName": "Database (Postgres)",
+        "faultType": "DB Connection Saturation",
+        "severity": "Critical",
+        "duration": 45,
+        "elapsed": 45,
+        "status": "Recovered",
+        "result": "Connection pool ceiling reached",
+        "confidence": "Evaluated (Active Topology)",
+        "date": "2 days ago",
+        "timestamp": "2026-10-28T14:15:00+00:00",
+        "description": "Simulate connection pool exhaustion on shared relational database.",
+        "environment": "Docker Compose (Isolated)",
+        "dockerFaultExecuted": False,
+        "affectedServices": ["order-service", "auth-service", "catalog-service", "inventory-service", "notification-service", "api-gateway"],
+        "levelMap": {
+            "postgres-db": 0,
+            "order-service": 1,
+            "auth-service": 1,
+            "catalog-service": 1,
+            "inventory-service": 1,
+            "notification-service": 1,
+            "api-gateway": 2
+        }
+    },
+    {
+        "id": "exp-104",
+        "name": "API Gateway 503 Outage Test",
+        "applicationId": "app-ecommerce",
+        "applicationName": "E-Commerce Platform",
+        "targetServiceId": "api-gateway",
+        "targetServiceName": "API Gateway",
+        "faultType": "HTTP 503",
+        "severity": "High",
+        "duration": 60,
+        "elapsed": 60,
+        "status": "Recovered",
+        "result": "Direct Ingress Outage",
+        "confidence": "Evaluated (Active Topology)",
+        "date": "3 days ago",
+        "timestamp": "2026-10-27T10:00:00+00:00",
+        "description": "Simulate ingress reverse-proxy returning HTTP 503 Service Unavailable.",
+        "environment": "Docker Compose (Isolated)",
+        "dockerFaultExecuted": False,
+        "affectedServices": ["external-clients"],
+        "levelMap": {
+            "api-gateway": 0,
+            "external-clients": 1
+        }
+    }
+]
+
 
 class Store:
     def __init__(self):
@@ -303,6 +414,12 @@ class Store:
             except Exception as e:
                 print(f"Error loading store from disk: {e}")
 
+        # Ensure seed experiments are available if not present
+        existing_ids = {e.get("id") for e in self.experiments}
+        for seed_exp in SEED_EXPERIMENTS:
+            if seed_exp["id"] not in existing_ids:
+                self.experiments.append(seed_exp)
+
     def _save_to_disk(self):
         try:
             os.makedirs(DATA_DIR, exist_ok=True)
@@ -324,6 +441,15 @@ class Store:
             if app["id"] == app_id:
                 return app
         return self.applications[0] if self.applications else None
+
+    def get_experiment_by_id(self, exp_id: str) -> Optional[Dict[str, Any]]:
+        for exp in self.experiments:
+            if exp.get("id") == exp_id:
+                return exp
+        for exp in SEED_EXPERIMENTS:
+            if exp.get("id") == exp_id:
+                return exp
+        return None
 
     def get_services(self, app_id: str) -> List[Dict[str, Any]]:
         if app_id in self.services_store:

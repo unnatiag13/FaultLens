@@ -1,4 +1,21 @@
-import { MOCK_ROOT_CAUSE, MOCK_INCIDENT_TIMELINE } from '../data/mockData';
+const API_URL = '/api/v1/analysis';
+
+async function apiRequest(url, options = {}) {
+  const response = await fetch(url, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    },
+  });
+
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.detail || `Request failed with status ${response.status}`);
+  }
+
+  return response.json();
+}
 
 export const analysisService = {
   async getImpactAnalysis(experimentId = 'exp-101') {
@@ -55,12 +72,10 @@ export const analysisService = {
     };
   },
 
-  async getRootCauseAnalysis(experimentId = 'exp-101') {
-    // FastAPI: GET /api/analysis/:experimentId/root-cause
-    await new Promise((r) => setTimeout(r, 200));
-    return {
-      ...MOCK_ROOT_CAUSE,
-      timeline: MOCK_INCIDENT_TIMELINE,
-    };
+  async getRootCauseAnalysis(experimentId = null) {
+    const url = experimentId
+      ? `${API_URL}/${encodeURIComponent(experimentId)}/root-cause`
+      : `${API_URL}/root-cause`;
+    return apiRequest(url);
   }
 };

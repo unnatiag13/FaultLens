@@ -58,6 +58,7 @@ export default function App() {
                 <Route path="/monitoring" element={<MonitoringPage />} />
                 <Route path="/analysis/impact" element={<ImpactAnalysisPage />} />
                 <Route path="/analysis/root-cause" element={<RootCausePage />} />
+                <Route path="/analysis/root-cause/:experimentId" element={<RootCausePage />} />
                 <Route path="/remediation" element={<RemediationPage />} />
                 <Route path="/history" element={<HistoryPage />} />
               </Route>
