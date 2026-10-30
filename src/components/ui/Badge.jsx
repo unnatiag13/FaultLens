@@ -47,24 +47,24 @@ export function Badge({
       case 'running':
       case 'active':
         return {
-          classes: 'bg-blue-950/70 text-blue-300 border-blue-600/50 shadow-sm shadow-blue-950/50',
-          icon: <Activity className={`${iconSizes[size]} text-blue-400 shrink-0 animate-pulse`} />,
+          classes: 'bg-brand-primary/10 text-orange-300 border-brand-primary/40 shadow-sm',
+          icon: <Activity className={`${iconSizes[size]} text-brand-primary shrink-0 animate-pulse`} />,
         };
       case 'ai':
         return {
-          classes: 'bg-purple-950/70 text-purple-300 border-purple-600/50',
-          icon: <Sparkles className={`${iconSizes[size]} text-purple-400 shrink-0`} />,
+          classes: 'bg-brand-primary/10 text-orange-300 border-brand-primary/30',
+          icon: <Sparkles className={`${iconSizes[size]} text-brand-ai shrink-0`} />,
         };
       case 'info':
         return {
-          classes: 'bg-cyan-950/60 text-cyan-300 border-cyan-700/50',
-          icon: <Clock className={`${iconSizes[size]} text-cyan-400 shrink-0`} />,
+          classes: 'bg-[#1A1A1A] text-[#888888] border-[#2E2E2E]',
+          icon: <Clock className={`${iconSizes[size]} text-brand-primary shrink-0`} />,
         };
       case 'neutral':
       default:
         return {
-          classes: 'bg-slate-800/80 text-slate-300 border-slate-700',
-          icon: <HelpCircle className={`${iconSizes[size]} text-slate-400 shrink-0`} />,
+          classes: 'bg-[#1A1A1A] text-slate-300 border-[#2E2E2E]',
+          icon: <HelpCircle className={`${iconSizes[size]} text-[#888888] shrink-0`} />,
         };
     }
   };

@@ -43,21 +43,21 @@ function ServiceNodeComponent({ data, selected }) {
       case 'degraded':
       case 'warning':
         return {
-          bg: 'bg-amber-950/70',
-          border: 'border-amber-600',
-          text: 'text-amber-200',
-          badgeBg: 'bg-amber-900/60',
-          badgeText: 'text-amber-300',
-          icon: <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />,
-          dot: 'bg-amber-500',
-          ring: 'ring-2 ring-amber-500/40 shadow-lg shadow-amber-950/30',
+          bg: 'bg-[#1A0D00]/80',
+          border: 'border-brand-primary/60',
+          text: 'text-orange-200',
+          badgeBg: 'bg-brand-primary/10',
+          badgeText: 'text-orange-300',
+          icon: <AlertTriangle className="w-3.5 h-3.5 text-brand-primary shrink-0" />,
+          dot: 'bg-brand-primary',
+          ring: 'ring-2 ring-brand-primary/40 shadow-lg shadow-brand-primary/10',
           label: data.statusLabel || 'DEGRADED',
         };
       case 'healthy':
       default:
         return {
-          bg: 'bg-space-900/90',
-          border: 'border-slate-700/80',
+          bg: 'bg-[#0D0D0D]/90',
+          border: 'border-[#2E2E2E]',
           text: 'text-slate-100',
           badgeBg: 'bg-emerald-950/70',
           badgeText: 'text-emerald-300',
@@ -74,13 +74,13 @@ function ServiceNodeComponent({ data, selected }) {
   const getServiceIcon = () => {
     switch (serviceType?.toLowerCase()) {
       case 'gateway':
-        return <Network className="w-4 h-4 text-cyan-400" />;
+        return <Network className="w-4 h-4 text-brand-primary" />;
       case 'database':
-        return <Database className="w-4 h-4 text-blue-400" />;
+        return <Database className="w-4 h-4 text-orange-400" />;
       case 'worker':
-        return <Cpu className="w-4 h-4 text-purple-400" />;
+        return <Cpu className="w-4 h-4 text-orange-300" />;
       default:
-        return <Server className="w-4 h-4 text-slate-300" />;
+        return <Server className="w-4 h-4 text-[#888888]" />;
     }
   };
 
@@ -89,14 +89,16 @@ function ServiceNodeComponent({ data, selected }) {
       className={`relative min-w-[210px] rounded-xl border backdrop-blur-md shadow-xl transition-all duration-200 select-none ${
         statusConfig.bg
       } ${statusConfig.border} ${statusConfig.ring} ${
-        selected ? 'ring-2 ring-brand-cyan scale-[1.02] shadow-cyan-900/30' : ''
+        selected
+          ? 'ring-2 ring-brand-primary scale-[1.02] shadow-[0_0_20px_-4px_rgba(234,88,12,0.4)]'
+          : ''
       }`}
     >
       {/* Top Handle */}
       <Handle
         type="target"
         position={Position.Top}
-        className="!w-2.5 !h-2.5 !bg-slate-400 !border-2 !border-space-950 -top-1.5"
+        className="!w-2.5 !h-2.5 !bg-[#3D3D3D] !border-2 !border-space-950 -top-1.5"
       />
 
       {/* Target Badge */}
@@ -113,23 +115,23 @@ function ServiceNodeComponent({ data, selected }) {
         </div>
       )}
 
-      {/* Cascading Delays Badge for downstream affected services */}
+      {/* Cascading Delays Badge */}
       {!isTarget && isAffected && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[9px] font-bold tracking-wider uppercase flex items-center gap-1 shadow-md shadow-amber-950 border border-amber-300">
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-brand-primary text-white text-[9px] font-bold tracking-wider uppercase flex items-center gap-1 shadow-md shadow-brand-primary/30 border border-brand-primary/60">
           <AlertTriangle className="w-2.5 h-2.5" />
           <span>CASCADING DELAYS</span>
         </div>
       )}
 
       {/* Node Header */}
-      <div className="p-3 border-b border-slate-800/80 flex items-center justify-between gap-2">
+      <div className="p-3 border-b border-[#1F1F1F] flex items-center justify-between gap-2">
         <div className="flex items-center gap-2 min-w-0">
-          <div className="w-6 h-6 rounded-md bg-slate-950/70 border border-slate-700/60 flex items-center justify-center shrink-0">
+          <div className="w-6 h-6 rounded-md bg-[#111111] border border-[#2E2E2E] flex items-center justify-center shrink-0">
             {getServiceIcon()}
           </div>
           <div className="min-w-0">
             <h4 className="text-xs font-semibold text-white truncate">{label}</h4>
-            <p className="text-[10px] text-slate-400 font-mono">{serviceType} {port ? `:${port}` : ''}</p>
+            <p className="text-[10px] text-[#888888] font-mono">{serviceType} {port ? `:${port}` : ''}</p>
           </div>
         </div>
 
@@ -140,17 +142,17 @@ function ServiceNodeComponent({ data, selected }) {
         </div>
       </div>
 
-      {/* Node Metrics Summary */}
-      <div className="px-3 py-2 grid grid-cols-2 gap-2 text-[10px] font-mono bg-slate-950/40 rounded-b-xl">
+      {/* Node Metrics */}
+      <div className="px-3 py-2 grid grid-cols-2 gap-2 text-[10px] font-mono bg-[#080808]/60 rounded-b-xl">
         <div>
-          <span className="text-slate-500 block">Latency</span>
-          <span className={`font-semibold ${status === 'critical' ? 'text-rose-300' : status === 'degraded' ? 'text-amber-300' : 'text-slate-300'}`}>
+          <span className="text-[#555555] block">Latency</span>
+          <span className={`font-semibold ${status === 'critical' ? 'text-rose-300' : status === 'degraded' ? 'text-orange-300' : 'text-slate-300'}`}>
             {responseTime || '18ms'}
           </span>
         </div>
         <div>
-          <span className="text-slate-500 block">Error Rate</span>
-          <span className={`font-semibold ${status === 'critical' ? 'text-rose-400' : status === 'degraded' ? 'text-amber-400' : 'text-emerald-400'}`}>
+          <span className="text-[#555555] block">Error Rate</span>
+          <span className={`font-semibold ${status === 'critical' ? 'text-rose-400' : status === 'degraded' ? 'text-brand-primary' : 'text-emerald-400'}`}>
             {errorRate || '0.0%'}
           </span>
         </div>
@@ -160,7 +162,7 @@ function ServiceNodeComponent({ data, selected }) {
       <Handle
         type="source"
         position={Position.Bottom}
-        className="!w-2.5 !h-2.5 !bg-slate-400 !border-2 !border-space-950 -bottom-1.5"
+        className="!w-2.5 !h-2.5 !bg-[#3D3D3D] !border-2 !border-space-950 -bottom-1.5"
       />
     </div>
   );

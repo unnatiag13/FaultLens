@@ -22,13 +22,13 @@ export function Button({
   };
 
   const variantStyles = {
-    primary: 'bg-brand-primary hover:bg-brand-primaryHover text-white shadow-sm shadow-brand-primary/30 border border-blue-500/30 focus:ring-brand-primary',
-    secondary: 'bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/80 focus:ring-slate-500',
-    danger: 'bg-rose-700 hover:bg-rose-600 text-white shadow-sm border border-rose-600/40 focus:ring-rose-500',
-    outline: 'bg-transparent hover:bg-slate-800/50 text-slate-300 border border-slate-700 focus:ring-slate-500',
-    ghost: 'bg-transparent hover:bg-slate-800/60 text-slate-300 hover:text-white border-transparent focus:ring-slate-500',
-    ai: 'bg-gradient-to-r from-purple-700 to-indigo-700 hover:from-purple-600 hover:to-indigo-600 text-white border border-purple-500/40 shadow-sm shadow-purple-600/20 focus:ring-purple-500',
-    cyan: 'bg-cyan-600 hover:bg-cyan-500 text-white border border-cyan-400/30 shadow-sm shadow-cyan-600/20 focus:ring-cyan-500',
+    primary:   'bg-brand-primary hover:bg-brand-primaryHover text-white shadow-sm shadow-brand-primary/30 border border-brand-primary/40 focus:ring-brand-primary',
+    secondary: 'bg-[#1A1A1A] hover:bg-[#222222] text-slate-200 border border-[#2E2E2E] focus:ring-[#444444]',
+    danger:    'bg-rose-700 hover:bg-rose-600 text-white shadow-sm border border-rose-600/40 focus:ring-rose-500',
+    outline:   'bg-transparent hover:bg-[#1A1A1A] text-slate-300 border border-[#2E2E2E] focus:ring-[#444444]',
+    ghost:     'bg-transparent hover:bg-[#1A1A1A] text-slate-300 hover:text-white border-transparent focus:ring-[#444444]',
+    ai:        'bg-gradient-to-r from-brand-primary to-orange-500 hover:from-brand-primaryHover hover:to-orange-400 text-white border border-brand-primary/40 shadow-sm shadow-brand-primary/20 focus:ring-brand-primary',
+    cyan:      'bg-brand-primary hover:bg-brand-primaryHover text-white border border-brand-primary/40 shadow-sm shadow-brand-primary/20 focus:ring-brand-primary',
   };
 
   return (

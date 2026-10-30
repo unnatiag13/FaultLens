@@ -56,12 +56,12 @@ export function Topbar({ setMobileOpen }) {
   };
 
   return (
-    <header className="sticky top-0 z-20 h-16 bg-space-950/80 backdrop-blur-md border-b border-slate-800/80 px-4 sm:px-6 flex items-center justify-between gap-4">
+    <header className="sticky top-0 z-20 h-16 bg-space-950/90 backdrop-blur-md border-b border-[#1F1F1F] px-4 sm:px-6 flex items-center justify-between gap-4">
       {/* Left side: Mobile menu toggle + Application Selector */}
       <div className="flex items-center gap-3">
         <button
           onClick={() => setMobileOpen((prev) => !prev)}
-          className="p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 lg:hidden"
+          className="p-2 rounded-lg text-[#888888] hover:text-white hover:bg-[#1A1A1A] lg:hidden"
           aria-label="Open mobile menu"
         >
           <Menu className="w-5 h-5" />
@@ -71,24 +71,24 @@ export function Topbar({ setMobileOpen }) {
         <div className="relative">
           <button
             onClick={() => setAppDropdownOpen((prev) => !prev)}
-            className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-panel border border-slate-700/80 hover:border-slate-600 text-left transition-colors text-xs"
+            className="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-panel border border-[#2E2E2E] hover:border-brand-primary/50 text-left transition-colors text-xs"
           >
             <div className="flex flex-col">
-              <span className="text-[10px] text-slate-400 uppercase font-mono tracking-wider font-semibold">Active Application</span>
+              <span className="text-[10px] text-[#888888] uppercase font-mono tracking-wider font-semibold">Active Application</span>
               <div className="flex items-center gap-1.5 font-semibold text-slate-100">
                 <span className="truncate max-w-[140px] sm:max-w-[200px]">{selectedApp?.name || 'Select Application'}</span>
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
               </div>
             </div>
-            <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0 ml-1" />
+            <ChevronDown className="w-3.5 h-3.5 text-[#888888] shrink-0 ml-1" />
           </button>
 
           {/* Application Selector Dropdown */}
           {appDropdownOpen && (
             <>
               <div className="fixed inset-0 z-30" onClick={() => setAppDropdownOpen(false)} />
-              <div className="absolute left-0 mt-1.5 w-72 bg-space-900 border border-slate-700/90 rounded-xl shadow-2xl shadow-black z-40 p-1.5 animate-fade-in">
-                <div className="px-2.5 py-1.5 text-[11px] font-semibold text-slate-400 uppercase font-mono tracking-wider border-b border-slate-800/80">
+              <div className="absolute left-0 mt-1.5 w-72 bg-space-900 border border-[#2E2E2E] rounded-xl shadow-2xl shadow-black z-40 p-1.5 animate-fade-in">
+                <div className="px-2.5 py-1.5 text-[11px] font-semibold text-[#888888] uppercase font-mono tracking-wider border-b border-[#1F1F1F]">
                   Switch Target Application
                 </div>
                 <div className="py-1 space-y-0.5">
@@ -101,25 +101,25 @@ export function Topbar({ setMobileOpen }) {
                       }}
                       className={`w-full flex items-center justify-between p-2 rounded-lg text-xs transition-colors text-left ${
                         selectedApp?.id === app.id
-                          ? 'bg-brand-primary/20 text-white font-medium border border-brand-primary/30'
-                          : 'text-slate-300 hover:bg-slate-800/70 hover:text-white'
+                          ? 'bg-brand-primary/15 text-white font-medium border border-brand-primary/30'
+                          : 'text-slate-300 hover:bg-[#1A1A1A] hover:text-white'
                       }`}
                     >
                       <div className="min-w-0 pr-2">
                         <p className="truncate font-medium">{app.name}</p>
-                        <p className="text-[10px] text-slate-500 font-mono truncate">{app.servicesCount} services • {app.environment.split(' ')[0]}</p>
+                        <p className="text-[10px] text-[#888888] font-mono truncate">{app.servicesCount} services • {app.environment.split(' ')[0]}</p>
                       </div>
-                      {selectedApp?.id === app.id && <Check className="w-4 h-4 text-brand-cyan shrink-0" />}
+                      {selectedApp?.id === app.id && <Check className="w-4 h-4 text-brand-primary shrink-0" />}
                     </button>
                   ))}
                 </div>
-                <div className="pt-1.5 mt-1 border-t border-slate-800">
+                <div className="pt-1.5 mt-1 border-t border-[#1F1F1F]">
                   <button
                     onClick={() => {
                       setAppDropdownOpen(false);
                       navigate('/applications/new');
                     }}
-                    className="w-full flex items-center gap-2 p-2 rounded-lg text-xs text-brand-cyan hover:bg-slate-800/70 transition-colors"
+                    className="w-full flex items-center gap-2 p-2 rounded-lg text-xs text-brand-primary hover:bg-[#1A1A1A] transition-colors"
                   >
                     <PlusCircle className="w-4 h-4" />
                     <span>+ Connect New Application</span>
@@ -134,25 +134,25 @@ export function Topbar({ setMobileOpen }) {
       {/* Middle: Quick Search */}
       <div className="hidden sm:flex flex-1 max-w-md mx-4">
         <form onSubmit={handleSearchSubmit} className="w-full relative">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#555555]" />
           <input
             type="text"
             placeholder="Search service, topology node, or experiment..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3.5 py-1.5 rounded-lg bg-panel border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary"
+            className="w-full pl-9 pr-3.5 py-1.5 rounded-lg bg-panel border border-[#2E2E2E] text-xs text-slate-200 placeholder-[#555555] focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/50"
           />
         </form>
       </div>
 
-      {/* Right side: Notifications + Fast Quick Action + User */}
+      {/* Right side: Notifications + Quick Action + User */}
       <div className="flex items-center gap-3">
         {/* Quick Launch Chaos Button */}
         <button
           onClick={() => navigate('/experiments/new')}
-          className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-950/40 hover:bg-rose-900/60 border border-rose-800/50 text-rose-300 text-xs font-medium transition-colors"
+          className="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-primary/10 hover:bg-brand-primary/20 border border-brand-primary/30 text-brand-primary text-xs font-medium transition-colors"
         >
-          <Flame className="w-3.5 h-3.5 text-rose-400" />
+          <Flame className="w-3.5 h-3.5" />
           <span>New Experiment</span>
         </button>
 
@@ -160,20 +160,20 @@ export function Topbar({ setMobileOpen }) {
         <div className="relative">
           <button
             onClick={() => setNotifDropdownOpen((prev) => !prev)}
-            className="relative p-2 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="relative p-2 rounded-lg text-[#888888] hover:text-white hover:bg-[#1A1A1A] transition-colors"
             aria-label="Notifications"
           >
             <Bell className="w-4 h-4" />
-            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-primary animate-pulse" />
           </button>
 
           {notifDropdownOpen && (
             <>
               <div className="fixed inset-0 z-30" onClick={() => setNotifDropdownOpen(false)} />
-              <div className="absolute right-0 mt-1.5 w-80 bg-space-900 border border-slate-700/80 rounded-xl shadow-2xl shadow-black z-40 p-2 animate-fade-in">
-                <div className="px-2 py-1.5 flex items-center justify-between border-b border-slate-800">
+              <div className="absolute right-0 mt-1.5 w-80 bg-space-900 border border-[#2E2E2E] rounded-xl shadow-2xl shadow-black z-40 p-2 animate-fade-in">
+                <div className="px-2 py-1.5 flex items-center justify-between border-b border-[#1F1F1F]">
                   <span className="text-xs font-semibold text-slate-200">Incident Signals</span>
-                  <span className="text-[10px] font-mono text-rose-400 bg-rose-950/60 px-1.5 py-0.5 rounded border border-rose-800/40">3 Active</span>
+                  <span className="text-[10px] font-mono text-brand-primary bg-brand-primary/10 px-1.5 py-0.5 rounded border border-brand-primary/30">3 Active</span>
                 </div>
                 <div className="py-1 space-y-1">
                   {notifications.map((n) => (
@@ -183,13 +183,13 @@ export function Topbar({ setMobileOpen }) {
                         setNotifDropdownOpen(false);
                         navigate('/analysis/impact');
                       }}
-                      className="p-2 rounded-lg hover:bg-slate-800/60 cursor-pointer transition-colors text-xs"
+                      className="p-2 rounded-lg hover:bg-[#1A1A1A] cursor-pointer transition-colors text-xs"
                     >
                       <div className="flex items-center justify-between mb-0.5">
                         <span className="font-medium text-slate-200">{n.title}</span>
-                        <span className="text-[10px] text-slate-500 font-mono">{n.time}</span>
+                        <span className="text-[10px] text-[#555555] font-mono">{n.time}</span>
                       </div>
-                      <p className="text-[11px] text-slate-400">{n.desc}</p>
+                      <p className="text-[11px] text-[#888888]">{n.desc}</p>
                     </div>
                   ))}
                 </div>
@@ -198,9 +198,9 @@ export function Topbar({ setMobileOpen }) {
           )}
         </div>
 
-        {/* User avatar display */}
-        <div className="flex items-center gap-2 pl-2 border-l border-slate-800">
-          <div className="w-7 h-7 rounded-lg bg-brand-primary/20 border border-brand-primary/50 text-brand-cyan text-xs font-bold flex items-center justify-center">
+        {/* User avatar */}
+        <div className="flex items-center gap-2 pl-2 border-l border-[#1F1F1F]">
+          <div className="w-7 h-7 rounded-lg bg-brand-primary/20 border border-brand-primary/40 text-brand-primary text-xs font-bold flex items-center justify-center">
             {user?.avatar || 'DEV'}
           </div>
           <span className="hidden xl:inline text-xs font-medium text-slate-300 truncate max-w-[100px]">

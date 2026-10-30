@@ -213,28 +213,28 @@ export function DependencyGraph({
 
       {/* Top Toolbar */}
       {showControls && (
-        <div className="p-3 bg-space-900/90 border-b border-slate-800/80 flex flex-wrap items-center justify-between gap-3 z-10">
+        <div className="p-3 bg-[#080808]/90 border-b border-[#1F1F1F] flex flex-wrap items-center justify-between gap-3 z-10">
           {/* Search Input */}
           <div className="flex items-center gap-2 flex-1 max-w-xs">
             <div className="relative w-full">
-              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-500" />
+              <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-[#555555]" />
               <input
                 type="text"
                 placeholder="Search or highlight node..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-1 bg-space-950 rounded border border-slate-800 text-xs text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-primary"
+                className="w-full pl-8 pr-3 py-1 bg-space-950 rounded border border-[#2E2E2E] text-xs text-slate-200 placeholder-[#555555] focus:outline-none focus:border-brand-primary focus:ring-1 focus:ring-brand-primary/40"
               />
             </div>
           </div>
 
           {/* Status Filter Badges */}
           <div className="flex items-center gap-1.5 text-xs">
-            <span className="text-slate-500 text-[11px] font-mono mr-1">Filter:</span>
+            <span className="text-[#555555] text-[11px] font-mono mr-1">Filter:</span>
             {[
               { id: 'ALL', label: 'All' },
               { id: 'HEALTHY', label: 'Healthy', icon: CheckCircle2, color: 'text-emerald-400' },
-              { id: 'DEGRADED', label: 'Degraded', icon: AlertTriangle, color: 'text-amber-400' },
+              { id: 'DEGRADED', label: 'Degraded', icon: AlertTriangle, color: 'text-brand-primary' },
               { id: 'CRITICAL', label: 'Failed', icon: XCircle, color: 'text-rose-400' },
             ].map((f) => (
               <button
@@ -242,8 +242,8 @@ export function DependencyGraph({
                 onClick={() => setStatusFilter(f.id)}
                 className={`px-2 py-0.5 rounded text-[11px] font-mono transition-colors flex items-center gap-1 ${
                   statusFilter === f.id
-                    ? 'bg-slate-700 text-white font-medium border border-slate-600'
-                    : 'bg-space-950 text-slate-400 hover:text-slate-200 border border-slate-800'
+                    ? 'bg-brand-primary/15 text-white font-medium border border-brand-primary/40'
+                    : 'bg-space-950 text-[#888888] hover:text-slate-200 border border-[#2E2E2E]'
                 }`}
               >
                 {f.icon && <f.icon className={`w-3 h-3 ${f.color}`} />}
@@ -259,12 +259,12 @@ export function DependencyGraph({
                 onClick={() => setShowBaseline((prev) => !prev)}
                 className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono transition-colors ${
                   showBaseline
-                    ? 'bg-brand-primary/20 text-cyan-300 border border-brand-primary/40'
-                    : 'bg-space-950 text-slate-400 border border-slate-800 hover:text-slate-200'
+                    ? 'bg-brand-primary/15 text-orange-300 border border-brand-primary/40'
+                    : 'bg-space-950 text-[#888888] border border-[#2E2E2E] hover:text-slate-200'
                 }`}
                 title="Toggle between baseline topology and active chaos blast radius"
               >
-                <Layers className="w-3.5 h-3.5 text-cyan-400" />
+                <Layers className="w-3.5 h-3.5 text-brand-primary" />
                 <span>{showBaseline ? 'Showing Baseline' : 'Fault Impact Active'}</span>
               </button>
             )}
@@ -274,12 +274,12 @@ export function DependencyGraph({
               onClick={() => setPropagationActive((prev) => !prev)}
               className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-mono transition-colors ${
                 propagationActive
-                  ? 'bg-rose-950/40 text-rose-300 border border-rose-800/40'
-                  : 'bg-space-950 text-slate-400 border border-slate-800'
+                  ? 'bg-brand-primary/10 text-orange-300 border border-brand-primary/30'
+                  : 'bg-space-950 text-[#888888] border border-[#2E2E2E]'
               }`}
               title="Toggle animated failure propagation edges"
             >
-              <Zap className={`w-3.5 h-3.5 ${propagationActive ? 'text-rose-400 animate-pulse' : 'text-slate-500'}`} />
+              <Zap className={`w-3.5 h-3.5 ${propagationActive ? 'text-brand-primary animate-pulse' : 'text-[#555555]'}`} />
               <span>Flow {propagationActive ? 'Active' : 'Off'}</span>
             </button>
           </div>
@@ -318,8 +318,8 @@ export function DependencyGraph({
         </ReactFlow>
 
         {/* Informative Legend Overlay */}
-        <div className="absolute top-4 left-4 p-2.5 rounded-lg bg-space-950/90 backdrop-blur-sm border border-slate-800/80 text-[10px] font-mono text-slate-400 space-y-1.5 pointer-events-none shadow-lg">
-          <div className="text-[11px] font-bold text-slate-200 border-b border-slate-800 pb-1 mb-1">
+        <div className="absolute top-4 left-4 p-2.5 rounded-lg bg-[#080808]/90 backdrop-blur-sm border border-[#1F1F1F] text-[10px] font-mono text-[#888888] space-y-1.5 pointer-events-none shadow-lg">
+          <div className="text-[11px] font-bold text-slate-200 border-b border-[#1F1F1F] pb-1 mb-1">
             Topology Legend
           </div>
           <div className="flex items-center gap-1.5">
@@ -327,20 +327,20 @@ export function DependencyGraph({
             <span className="text-rose-200 font-semibold">Fault Target (Red / Failed)</span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-500 ring-2 ring-amber-950" />
-            <span className="text-amber-200">Downstream Caller (Degraded)</span>
+            <span className="w-2.5 h-2.5 rounded-full bg-brand-primary ring-2 ring-[#1A0D00]" />
+            <span className="text-orange-200">Downstream Caller (Degraded)</span>
           </div>
           <div className="flex items-center gap-1.5">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-950" />
             <span className="text-emerald-200">Unaffected Service (Healthy)</span>
           </div>
-          <div className="flex items-center gap-1.5 pt-1 border-t border-slate-800/60 text-[9px] text-slate-400">
+          <div className="flex items-center gap-1.5 pt-1 border-t border-[#1F1F1F] text-[9px] text-[#555555]">
             <span className="w-2.5 h-0.5 bg-rose-500" />
             <span>Red Flow = Ingress Outage</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[9px] text-slate-400">
-            <span className="w-2.5 h-0.5 bg-amber-500" />
-            <span>Amber Flow = Cascade Latency</span>
+          <div className="flex items-center gap-1.5 text-[9px] text-[#555555]">
+            <span className="w-2.5 h-0.5 bg-brand-primary" />
+            <span>Orange Flow = Cascade Latency</span>
           </div>
         </div>
 

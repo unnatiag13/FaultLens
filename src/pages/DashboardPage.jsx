@@ -117,42 +117,42 @@ export function DashboardPage() {
       {/* 4 SUMMARY STAT CARDS */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {/* Applications */}
-        <div className="bg-panel border border-slate-800/80 rounded-xl p-4 flex items-center justify-between shadow-sm">
+        <div className="bg-panel border border-[#1F1F1F] rounded-xl p-4 flex items-center justify-between shadow-sm">
           <div>
-            <span className="text-xs text-slate-400 font-medium">Applications</span>
+            <span className="text-xs text-[#888888] font-medium">Applications</span>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-2xl font-bold font-mono text-white">3</span>
-              <span className="text-[11px] text-slate-500 font-mono">Isolated</span>
+              <span className="text-[11px] text-[#555555] font-mono">Isolated</span>
             </div>
             <p className="text-[10px] text-emerald-400 mt-1 font-mono">● All Sandboxed</p>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-blue-950/60 border border-blue-800/50 flex items-center justify-center text-blue-400">
+          <div className="w-10 h-10 rounded-lg bg-brand-primary/10 border border-brand-primary/30 flex items-center justify-center text-brand-primary">
             <Layers className="w-5 h-5" />
           </div>
         </div>
 
         {/* Services */}
-        <div className="bg-panel border border-slate-800/80 rounded-xl p-4 flex items-center justify-between shadow-sm">
+        <div className="bg-panel border border-[#1F1F1F] rounded-xl p-4 flex items-center justify-between shadow-sm">
           <div>
-            <span className="text-xs text-slate-400 font-medium">Services Discovered</span>
+            <span className="text-xs text-[#888888] font-medium">Services Discovered</span>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-2xl font-bold font-mono text-white">18</span>
-              <span className="text-[11px] text-slate-500 font-mono">across clusters</span>
+              <span className="text-[11px] text-[#555555] font-mono">across clusters</span>
             </div>
-            <p className="text-[10px] text-cyan-400 mt-1 font-mono">11 Topological Edges</p>
+            <p className="text-[10px] text-brand-primary mt-1 font-mono">11 Topological Edges</p>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-cyan-950/60 border border-cyan-800/50 flex items-center justify-center text-cyan-400">
+          <div className="w-10 h-10 rounded-lg bg-brand-primary/10 border border-brand-primary/30 flex items-center justify-center text-brand-primary">
             <Server className="w-5 h-5" />
           </div>
         </div>
 
         {/* Experiments */}
-        <div className="bg-panel border border-slate-800/80 rounded-xl p-4 flex items-center justify-between shadow-sm">
+        <div className="bg-panel border border-[#1F1F1F] rounded-xl p-4 flex items-center justify-between shadow-sm">
           <div>
-            <span className="text-xs text-slate-400 font-medium">Resilience Tests</span>
+            <span className="text-xs text-[#888888] font-medium">Resilience Tests</span>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-2xl font-bold font-mono text-white">24</span>
-              <span className="text-[11px] text-slate-500 font-mono">executed</span>
+              <span className="text-[11px] text-[#555555] font-mono">executed</span>
             </div>
             <p className="text-[10px] text-rose-400 mt-1 font-mono">Last: 2 hours ago</p>
           </div>
@@ -162,23 +162,23 @@ export function DashboardPage() {
         </div>
 
         {/* Active Issues */}
-        <div className="bg-panel border border-slate-800/80 rounded-xl p-4 flex items-center justify-between shadow-sm">
+        <div className="bg-panel border border-[#1F1F1F] rounded-xl p-4 flex items-center justify-between shadow-sm">
           <div>
-            <span className="text-xs text-slate-400 font-medium">Active Anomalies</span>
+            <span className="text-xs text-[#888888] font-medium">Active Anomalies</span>
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="text-2xl font-bold font-mono text-amber-300">2</span>
-              <span className="text-[11px] text-slate-500 font-mono">impact signals</span>
+              <span className="text-2xl font-bold font-mono text-brand-primary">2</span>
+              <span className="text-[11px] text-[#555555] font-mono">impact signals</span>
             </div>
-            <p className="text-[10px] text-amber-400 mt-1 font-mono">1 Root Cause Identified</p>
+            <p className="text-[10px] text-brand-primary mt-1 font-mono">1 Root Cause Identified</p>
           </div>
-          <div className="w-10 h-10 rounded-lg bg-amber-950/60 border border-amber-800/50 flex items-center justify-center text-amber-400">
+          <div className="w-10 h-10 rounded-lg bg-brand-primary/10 border border-brand-primary/30 flex items-center justify-center text-brand-primary">
             <AlertTriangle className="w-5 h-5" />
           </div>
         </div>
       </div>
 
       {/* APPLICATION HEALTH BREAKDOWN CARD */}
-      <div className="bg-panel border border-slate-800/80 rounded-xl p-4 sm:p-5 shadow-sm">
+      <div className="bg-panel border border-[#1F1F1F] rounded-xl p-4 sm:p-5 shadow-sm">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-slate-800/80">
           <div>
             <div className="flex items-center gap-2">

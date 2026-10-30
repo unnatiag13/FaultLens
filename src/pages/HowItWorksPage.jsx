@@ -46,8 +46,8 @@ export function HowItWorksPage() {
           </div>
 
           {/* Page Header */}
-          <div className="border-b border-slate-800/80 pb-8 mb-16 text-left">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-space-900 border border-slate-700/80 text-[11px] font-mono text-brand-cyan mb-4">
+          <div className="border-b border-[#1F1F1F] pb-8 mb-16 text-left">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#111111] border border-brand-primary/30 text-[11px] font-mono text-brand-primary mb-4">
               <span>ENGINEERING WORKFLOW</span>
             </div>
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white">
@@ -62,13 +62,13 @@ export function HowItWorksPage() {
           <div className="relative pl-8 sm:pl-10 space-y-16 before:content-[''] before:absolute before:left-3 sm:before:left-4 before:top-4 before:bottom-4 before:w-0.5 before:bg-slate-800">
             {/* STEP 1 */}
             <div className="relative group">
-              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-slate-900 border-2 border-brand-primary text-brand-cyan text-xs font-bold font-mono flex items-center justify-center shadow-lg">
+              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-brand-primary text-brand-primary text-xs font-bold font-mono flex items-center justify-center shadow-lg">
                 1
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <span className="text-[10px] font-mono uppercase text-brand-cyan tracking-wider font-semibold">Step 01</span>
+                  <span className="text-[10px] font-mono uppercase text-brand-primary tracking-wider font-semibold">Step 01</span>
                   <h2 className="text-xl sm:text-2xl font-bold text-white mt-0.5">
                     Connect Your Application
                   </h2>
@@ -85,8 +85,8 @@ export function HowItWorksPage() {
                       <span className="font-semibold text-white">User Application</span>
                     </div>
                     <div className="text-slate-500 font-bold sm:rotate-0 rotate-90">↓</div>
-                    <div className="p-3 rounded-lg bg-blue-950/60 border border-blue-700/60 text-blue-200 w-44 shadow-sm">
-                      <span className="text-cyan-400 block text-[10px]">Ingress Controller</span>
+                    <div className="p-3 rounded-lg bg-brand-primary/10 border border-brand-primary/40 text-orange-200 w-44 shadow-sm">
+                      <span className="text-brand-primary block text-[10px]">Ingress Controller</span>
                       <span className="font-bold">FaultLens</span>
                     </div>
                     <div className="text-slate-500 font-bold sm:rotate-0 rotate-90">↓</div>
@@ -96,16 +96,16 @@ export function HowItWorksPage() {
                     </div>
                   </div>
 
-                  <div className="pt-3 border-t border-slate-800 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                    <div className="p-2.5 rounded bg-space-950 border border-slate-800/80">
-                      <span className="font-semibold text-brand-cyan block">Docker Compose (Primary MVP)</span>
+                  <div className="pt-3 border-t border-[#1F1F1F] grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
+                    <div className="p-2.5 rounded bg-space-950 border border-[#1F1F1F]">
+                      <span className="font-semibold text-brand-primary block">Docker Compose (Primary MVP)</span>
                       <span className="text-[11px] text-slate-400">Parse service links and port mappings automatically</span>
                     </div>
-                    <div className="p-2.5 rounded bg-space-950 border border-slate-800/80">
+                    <div className="p-2.5 rounded bg-space-950 border border-[#1F1F1F]">
                       <span className="font-semibold text-slate-300 block">Configuration Import</span>
                       <span className="text-[11px] text-slate-400">Kubernetes manifests or OpenAPI service descriptors</span>
                     </div>
-                    <div className="p-2.5 rounded bg-space-950 border border-slate-800/80">
+                    <div className="p-2.5 rounded bg-space-950 border border-[#1F1F1F]">
                       <span className="font-semibold text-slate-300 block">Application Endpoint</span>
                       <span className="text-[11px] text-slate-400">Direct synthetic harness into test sandbox cluster</span>
                     </div>
@@ -116,13 +116,13 @@ export function HowItWorksPage() {
 
             {/* STEP 2 */}
             <div className="relative group">
-              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-slate-900 border-2 border-brand-cyan text-brand-cyan text-xs font-bold font-mono flex items-center justify-center shadow-lg">
+              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-brand-primary text-brand-primary text-xs font-bold font-mono flex items-center justify-center shadow-lg">
                 2
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <span className="text-[10px] font-mono uppercase text-brand-cyan tracking-wider font-semibold">Step 02</span>
+                  <span className="text-[10px] font-mono uppercase text-brand-primary tracking-wider font-semibold">Step 02</span>
                   <h2 className="text-xl sm:text-2xl font-bold text-white mt-0.5">
                     Discover Services
                   </h2>
@@ -135,7 +135,7 @@ export function HowItWorksPage() {
                   <div className="flex items-center justify-center gap-2 text-xs font-mono text-slate-400">
                     <span>Application</span>
                     <span>→</span>
-                    <span className="text-brand-cyan font-semibold">Service Discovery Scanner</span>
+                    <span className="text-brand-primary font-semibold">Service Discovery Scanner</span>
                     <span>→</span>
                     <span className="text-emerald-400">6 Discovered Nodes</span>
                   </div>
@@ -152,7 +152,7 @@ export function HowItWorksPage() {
                       const Icon = s.icon;
                       return (
                         <div key={s.name} className="p-2.5 rounded-lg bg-space-950 border border-slate-800 flex items-center gap-2">
-                          <Icon className="w-4 h-4 text-cyan-400 shrink-0" />
+                          <Icon className="w-4 h-4 text-brand-primary shrink-0" />
                           <div className="min-w-0">
                             <p className="text-xs font-semibold text-slate-200 truncate">{s.name}</p>
                             <p className="text-[10px] text-slate-400 font-mono">:{s.port}</p>
@@ -167,13 +167,13 @@ export function HowItWorksPage() {
 
             {/* STEP 3 */}
             <div className="relative group">
-              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-slate-900 border-2 border-brand-primary text-brand-cyan text-xs font-bold font-mono flex items-center justify-center shadow-lg">
+              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-brand-primary text-brand-primary text-xs font-bold font-mono flex items-center justify-center shadow-lg">
                 3
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <span className="text-[10px] font-mono uppercase text-brand-cyan tracking-wider font-semibold">Step 03</span>
+                  <span className="text-[10px] font-mono uppercase text-brand-primary tracking-wider font-semibold">Step 03</span>
                   <h2 className="text-xl sm:text-2xl font-bold text-white mt-0.5">
                     Build the Dependency Graph
                   </h2>
@@ -245,7 +245,7 @@ export function HowItWorksPage() {
 
             {/* STEP 4 */}
             <div className="relative group">
-              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-slate-900 border-2 border-rose-500 text-rose-400 text-xs font-bold font-mono flex items-center justify-center shadow-lg">
+              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-rose-500 text-rose-400 text-xs font-bold font-mono flex items-center justify-center shadow-lg">
                 4
               </div>
 
@@ -270,19 +270,19 @@ export function HowItWorksPage() {
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-mono">
-                    <div className="p-2.5 rounded bg-space-950 border border-slate-800">
+                    <div className="p-2.5 rounded bg-space-950 border border-[#1F1F1F]">
                       <span className="text-slate-400 block text-[10px]">Application</span>
                       <span className="text-slate-200 font-semibold">E-Commerce Platform</span>
                     </div>
-                    <div className="p-2.5 rounded bg-space-950 border border-slate-800">
+                    <div className="p-2.5 rounded bg-space-950 border border-[#1F1F1F]">
                       <span className="text-slate-400 block text-[10px]">Target Service</span>
                       <span className="text-rose-400 font-semibold">Payment Service</span>
                     </div>
-                    <div className="p-2.5 rounded bg-space-950 border border-slate-800">
+                    <div className="p-2.5 rounded bg-space-950 border border-[#1F1F1F]">
                       <span className="text-slate-400 block text-[10px]">Fault Type</span>
                       <span className="text-slate-200">Service Failure (SIGKILL)</span>
                     </div>
-                    <div className="p-2.5 rounded bg-space-950 border border-slate-800">
+                    <div className="p-2.5 rounded bg-space-950 border border-[#1F1F1F]">
                       <span className="text-slate-400 block text-[10px]">Duration & Severity</span>
                       <span className="text-slate-200">60 seconds • High Severity</span>
                     </div>
@@ -304,13 +304,13 @@ export function HowItWorksPage() {
 
             {/* STEP 5 */}
             <div className="relative group">
-              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-slate-900 border-2 border-brand-cyan text-brand-cyan text-xs font-bold font-mono flex items-center justify-center shadow-lg">
+              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-brand-primary text-brand-primary text-xs font-bold font-mono flex items-center justify-center shadow-lg">
                 5
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <span className="text-[10px] font-mono uppercase text-brand-cyan tracking-wider font-semibold">Step 05</span>
+                  <span className="text-[10px] font-mono uppercase text-brand-primary tracking-wider font-semibold">Step 05</span>
                   <h2 className="text-xl sm:text-2xl font-bold text-white mt-0.5">
                     Observe Failure Propagation
                   </h2>
@@ -323,13 +323,13 @@ export function HowItWorksPage() {
                   {/* Timeline */}
                   <div className="space-y-2 font-mono text-xs">
                     {[
-                      { time: '12:04:20', text: 'Experiment started', color: 'text-cyan-400' },
+                      { time: '12:04:20', text: 'Experiment started', color: 'text-brand-primary' },
                       { time: '12:04:25', text: 'Payment Service failed', color: 'text-rose-400 font-bold' },
                       { time: '12:04:27', text: 'Order Service degraded (socket wait)', color: 'text-amber-400' },
                       { time: '12:04:30', text: 'API error rate increased (HTTP 504 timeouts)', color: 'text-amber-400' },
                       { time: '12:04:42', text: 'User requests affected (348 failed checkouts)', color: 'text-rose-400' },
                     ].map((t) => (
-                      <div key={t.time} className="flex items-center gap-3 p-2 rounded bg-space-950 border border-slate-800/80">
+                      <div key={t.time} className="flex items-center gap-3 p-2 rounded bg-space-950 border border-[#1F1F1F]">
                         <span className="text-slate-500 font-semibold">{t.time}</span>
                         <span className="w-1.5 h-1.5 rounded-full bg-slate-600" />
                         <span className={t.color}>{t.text}</span>
@@ -361,13 +361,13 @@ export function HowItWorksPage() {
 
             {/* STEP 6 */}
             <div className="relative group">
-              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-slate-900 border-2 border-brand-primary text-brand-cyan text-xs font-bold font-mono flex items-center justify-center shadow-lg">
+              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-brand-primary text-brand-primary text-xs font-bold font-mono flex items-center justify-center shadow-lg">
                 6
               </div>
 
               <div className="space-y-4">
                 <div>
-                  <span className="text-[10px] font-mono uppercase text-brand-cyan tracking-wider font-semibold">Step 06</span>
+                  <span className="text-[10px] font-mono uppercase text-brand-primary tracking-wider font-semibold">Step 06</span>
                   <h2 className="text-xl sm:text-2xl font-bold text-white mt-0.5">
                     Identify the Probable Root Cause
                   </h2>
@@ -417,7 +417,7 @@ export function HowItWorksPage() {
 
             {/* STEP 7 */}
             <div className="relative group">
-              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-slate-900 border-2 border-purple-500 text-purple-400 text-xs font-bold font-mono flex items-center justify-center shadow-lg">
+              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-purple-500 text-purple-400 text-xs font-bold font-mono flex items-center justify-center shadow-lg">
                 7
               </div>
 
@@ -488,7 +488,7 @@ export function HowItWorksPage() {
 
             {/* STEP 8 */}
             <div className="relative group">
-              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-slate-900 border-2 border-emerald-500 text-emerald-400 text-xs font-bold font-mono flex items-center justify-center shadow-lg">
+              <div className="absolute -left-[37px] sm:-left-[41px] top-0 w-8 h-8 rounded-full bg-[#111111] border-2 border-emerald-500 text-emerald-400 text-xs font-bold font-mono flex items-center justify-center shadow-lg">
                 8
               </div>
 
@@ -506,11 +506,11 @@ export function HowItWorksPage() {
                 <div className="p-5 rounded-xl bg-space-900/90 border border-slate-800 space-y-4">
                   {/* Process flow */}
                   <div className="flex flex-wrap items-center justify-center gap-3 py-2 text-xs font-mono text-center">
-                    <span className="p-2 rounded bg-space-950 border border-slate-800">AI Recommendation</span>
+                    <span className="p-2 rounded bg-space-950 border border-[#1F1F1F]">AI Recommendation</span>
                     <span className="text-slate-600">→</span>
                     <span className="p-2 rounded bg-amber-950/40 border border-amber-800/60 text-amber-300 font-semibold">Developer Review</span>
                     <span className="text-slate-600">→</span>
-                    <span className="p-2 rounded bg-space-950 border border-slate-800">Approve / Modify / Reject</span>
+                    <span className="p-2 rounded bg-space-950 border border-[#1F1F1F]">Approve / Modify / Reject</span>
                     <span className="text-slate-600">→</span>
                     <span className="p-2 rounded bg-emerald-950/40 border border-emerald-800/60 text-emerald-300 font-semibold">Developer-Controlled Deployment</span>
                   </div>
@@ -551,3 +551,4 @@ export function HowItWorksPage() {
     </div>
   );
 }
+

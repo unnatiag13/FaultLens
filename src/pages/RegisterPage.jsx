@@ -1,10 +1,26 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Network, ArrowRight, Lock, Mail, User, AlertCircle, ShieldCheck } from 'lucide-react';
+import { GitFork, ArrowRight, Lock, Mail, User, AlertCircle, ShieldCheck, Eye, EyeOff, CheckCircle2, XCircle } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
+
+// Password strength checker
+function getPasswordStrength(pwd) {
+  if (!pwd) return { score: 0, label: '', color: '' };
+  let score = 0;
+  if (pwd.length >= 8) score++;
+  if (pwd.length >= 12) score++;
+  if (/[A-Z]/.test(pwd)) score++;
+  if (/[0-9]/.test(pwd)) score++;
+  if (/[^A-Za-z0-9]/.test(pwd)) score++;
+
+  if (score <= 1) return { score, label: 'Weak', color: 'bg-rose-500' };
+  if (score <= 2) return { score, label: 'Fair', color: 'bg-brand-primary' };
+  if (score <= 3) return { score, label: 'Good', color: 'bg-amber-400' };
+  return { score, label: 'Strong', color: 'bg-emerald-500' };
+}
 
 export function RegisterPage() {
   const { register } = useAuth();
@@ -15,31 +31,28 @@ export function RegisterPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const [errors, setErrors] = useState({});
   const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+
+  const strength = getPasswordStrength(password);
 
   const validate = () => {
     const errs = {};
-    if (!name.trim()) {
-      errs.name = 'Full name is required.';
-    }
+    if (!name.trim()) errs.name = 'Full name is required.';
+    else if (name.trim().length < 2) errs.name = 'Name must be at least 2 characters.';
 
-    if (!email.trim()) {
-      errs.email = 'Email address is required.';
-    } else if (!/\S+@\S+\.\S+/.test(email)) {
-      errs.email = 'Please enter a valid email format.';
-    }
+    if (!email.trim()) errs.email = 'Email address is required.';
+    else if (!/\S+@\S+\.\S+/.test(email)) errs.email = 'Please enter a valid email address.';
 
-    if (!password) {
-      errs.password = 'Password is required.';
-    } else if (password.length < 6) {
-      errs.password = 'Password must be at least 6 characters.';
-    }
+    if (!password) errs.password = 'Password is required.';
+    else if (password.length < 6) errs.password = 'Password must be at least 6 characters.';
 
-    if (password !== confirmPassword) {
-      errs.confirmPassword = 'Passwords do not match.';
-    }
+    if (!confirmPassword) errs.confirmPassword = 'Please confirm your password.';
+    else if (password !== confirmPassword) errs.confirmPassword = 'Passwords do not match.';
 
     setErrors(errs);
     return Object.keys(errs).length === 0;
@@ -48,9 +61,7 @@ export function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setServerError('');
-
     if (!validate()) return;
-
     setLoading(true);
     try {
       await register(name, email, password);
@@ -63,27 +74,47 @@ export function RegisterPage() {
     }
   };
 
+  const handleGoogleSignUp = async () => {
+    setGoogleLoading(true);
+    setServerError('');
+    try {
+      // Google OAuth placeholder — wire to real OAuth provider here
+      // e.g. window.location.href = '/api/auth/google'
+      await new Promise((r) => setTimeout(r, 800));
+      addToast('Google Sign-Up', 'Google OAuth integration required. Configure your OAuth provider.', 'warning');
+    } catch (err) {
+      setServerError('Google sign-up failed. Please try again.');
+    } finally {
+      setGoogleLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-space-950 text-slate-100 flex flex-col justify-center py-12 sm:px-6 lg:px-8 space-bg relative">
+
+      {/* Logo */}
       <div className="sm:mx-auto sm:w-full sm:max-w-md text-center">
-        {/* Logo */}
         <Link to="/" className="inline-flex items-center gap-2.5 mb-6 group">
-          <div className="w-9 h-9 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center text-brand-cyan group-hover:border-brand-primary transition-colors shadow-inner">
-            <Network className="w-5 h-5 text-cyan-400" />
+          <div className="w-9 h-9 rounded-xl bg-[#111111] border border-[#2E2E2E] flex items-center justify-center group-hover:border-brand-primary transition-colors shadow-inner">
+            <GitFork className="w-5 h-5 text-brand-primary rotate-90" />
           </div>
-          <span className="font-bold tracking-tight text-lg text-white">FAULT<span className="text-brand-cyan">LENS</span></span>
+          <span className="font-bold tracking-tight text-lg text-white">
+            FAULT<span className="text-brand-primary">LENS</span>
+          </span>
         </Link>
 
         <h2 className="text-2xl font-bold tracking-tight text-white">
           Create your FaultLens account
         </h2>
-        <p className="mt-1 text-xs text-slate-400">
+        <p className="mt-1 text-xs text-[#888888]">
           Deploy chaos experiments and map distributed microservice topologies.
         </p>
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md px-4 sm:px-0">
-        <div className="bg-space-900/90 border border-slate-800 rounded-2xl p-6 sm:p-8 shadow-2xl backdrop-blur-md">
+        <div className="bg-[#0D0D0D] border border-[#1F1F1F] rounded-2xl p-6 sm:p-8 shadow-2xl">
+
+          {/* Server Error */}
           {serverError && (
             <div className="mb-5 p-3 rounded-lg bg-rose-950/40 border border-rose-800/60 text-rose-300 text-xs flex items-start gap-2.5">
               <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
@@ -91,10 +122,43 @@ export function RegisterPage() {
             </div>
           )}
 
+          {/* Google Sign Up */}
+          <button
+            type="button"
+            onClick={handleGoogleSignUp}
+            disabled={googleLoading || loading}
+            className="w-full flex items-center justify-center gap-3 px-4 py-2.5 rounded-lg bg-[#111111] hover:bg-[#1A1A1A] border border-[#2E2E2E] hover:border-[#3D3D3D] text-slate-200 text-sm font-medium transition-all duration-150 disabled:opacity-50 disabled:cursor-not-allowed mb-5"
+          >
+            {googleLoading ? (
+              <svg className="w-4 h-4 animate-spin text-[#888888]" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+              </svg>
+            ) : (
+              <svg className="w-4 h-4" viewBox="0 0 24 24">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              </svg>
+            )}
+            <span>{googleLoading ? 'Signing up...' : 'Continue with Google'}</span>
+          </button>
+
+          {/* Divider */}
+          <div className="flex items-center gap-3 mb-5">
+            <div className="flex-1 h-px bg-[#1F1F1F]" />
+            <span className="text-[11px] text-[#555555] font-mono">or create with email</span>
+            <div className="flex-1 h-px bg-[#1F1F1F]" />
+          </div>
+
+          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-4">
+
+            {/* Full Name */}
             <Input
               label="Full Name"
-              placeholder="e.g. Jordan Hayes"
+              placeholder="Your full name"
               value={name}
               onChange={(e) => {
                 setName(e.target.value);
@@ -102,13 +166,15 @@ export function RegisterPage() {
               }}
               error={errors.name}
               icon={User}
+              autoComplete="name"
               required
             />
 
+            {/* Email */}
             <Input
               label="Email"
               type="email"
-              placeholder="jordan.hayes@company.com"
+              placeholder="you@company.com"
               value={email}
               onChange={(e) => {
                 setEmail(e.target.value);
@@ -116,38 +182,97 @@ export function RegisterPage() {
               }}
               error={errors.email}
               icon={Mail}
+              autoComplete="email"
               required
             />
 
-            <Input
-              label="Password"
-              type="password"
-              placeholder="Minimum 6 characters"
-              value={password}
-              onChange={(e) => {
-                setPassword(e.target.value);
-                if (errors.password) setErrors((prev) => ({ ...prev, password: null }));
-              }}
-              error={errors.password}
-              icon={Lock}
-              required
-            />
+            {/* Password with strength meter */}
+            <div>
+              <div className="relative">
+                <Input
+                  label="Password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Minimum 6 characters"
+                  value={password}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    if (errors.password) setErrors((prev) => ({ ...prev, password: null }));
+                  }}
+                  error={errors.password}
+                  icon={Lock}
+                  autoComplete="new-password"
+                  required
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((p) => !p)}
+                  className="absolute right-3 top-8 text-[#555555] hover:text-slate-300 transition-colors"
+                  tabIndex={-1}
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
 
-            <Input
-              label="Confirm Password"
-              type="password"
-              placeholder="Re-enter password"
-              value={confirmPassword}
-              onChange={(e) => {
-                setConfirmPassword(e.target.value);
-                if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: null }));
-              }}
-              error={errors.confirmPassword}
-              icon={Lock}
-              required
-            />
+              {/* Password strength bar */}
+              {password && (
+                <div className="mt-2 space-y-1">
+                  <div className="flex gap-1">
+                    {[1, 2, 3, 4].map((i) => (
+                      <div
+                        key={i}
+                        className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+                          i <= strength.score ? strength.color : 'bg-[#2E2E2E]'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <p className="text-[10px] font-mono text-[#888888]">
+                    Strength: <span className={
+                      strength.label === 'Strong' ? 'text-emerald-400' :
+                      strength.label === 'Good' ? 'text-amber-400' :
+                      strength.label === 'Fair' ? 'text-brand-primary' : 'text-rose-400'
+                    }>{strength.label}</span>
+                  </p>
+                </div>
+              )}
+            </div>
 
-            <div className="pt-2">
+            {/* Confirm Password */}
+            <div className="relative">
+              <Input
+                label="Confirm Password"
+                type={showConfirm ? 'text' : 'password'}
+                placeholder="Re-enter your password"
+                value={confirmPassword}
+                onChange={(e) => {
+                  setConfirmPassword(e.target.value);
+                  if (errors.confirmPassword) setErrors((prev) => ({ ...prev, confirmPassword: null }));
+                }}
+                error={errors.confirmPassword}
+                icon={Lock}
+                autoComplete="new-password"
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirm((p) => !p)}
+                className="absolute right-3 top-8 text-[#555555] hover:text-slate-300 transition-colors"
+                tabIndex={-1}
+              >
+                {showConfirm ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              </button>
+              {/* Match indicator */}
+              {confirmPassword && password && (
+                <div className="absolute right-9 top-8">
+                  {password === confirmPassword
+                    ? <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    : <XCircle className="w-4 h-4 text-rose-400" />
+                  }
+                </div>
+              )}
+            </div>
+
+            <div className="pt-1">
               <Button
                 type="submit"
                 variant="primary"
@@ -161,17 +286,17 @@ export function RegisterPage() {
             </div>
           </form>
 
-          <div className="mt-5 pt-4 border-t border-slate-800/80 text-center">
-            <div className="flex items-center justify-center gap-1.5 text-xs text-slate-400">
+          <div className="mt-5 pt-4 border-t border-[#1F1F1F] text-center">
+            <div className="flex items-center justify-center gap-1.5 text-xs text-[#888888]">
               <span>Already have an account?</span>
-              <Link to="/login" className="text-brand-cyan hover:underline font-medium">
+              <Link to="/login" className="text-brand-primary hover:underline font-medium">
                 Sign in
               </Link>
             </div>
           </div>
         </div>
 
-        <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-slate-500 font-mono">
+        <div className="mt-6 flex items-center justify-center gap-2 text-[11px] text-[#555555] font-mono">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
           <span>Non-destructive chaos testing platform • Strict isolation</span>
         </div>
