@@ -37,8 +37,8 @@ function ServiceNodeComponent({ data, selected }) {
           badgeText: 'text-rose-300',
           icon: <XCircle className="w-3.5 h-3.5 text-rose-400 shrink-0" />,
           dot: 'bg-rose-500',
-          ring: 'ring-2 ring-rose-500/50',
-          label: 'FAILED',
+          ring: 'ring-2 ring-rose-500/50 shadow-lg shadow-rose-950/40',
+          label: data.statusLabel || 'FAILED',
         };
       case 'degraded':
       case 'warning':
@@ -50,8 +50,8 @@ function ServiceNodeComponent({ data, selected }) {
           badgeText: 'text-amber-300',
           icon: <AlertTriangle className="w-3.5 h-3.5 text-amber-400 shrink-0" />,
           dot: 'bg-amber-500',
-          ring: 'ring-2 ring-amber-500/40',
-          label: 'DEGRADED',
+          ring: 'ring-2 ring-amber-500/40 shadow-lg shadow-amber-950/30',
+          label: data.statusLabel || 'DEGRADED',
         };
       case 'healthy':
       default:
@@ -64,7 +64,7 @@ function ServiceNodeComponent({ data, selected }) {
           icon: <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />,
           dot: 'bg-emerald-500',
           ring: '',
-          label: 'HEALTHY',
+          label: data.statusLabel || 'HEALTHY',
         };
     }
   };
@@ -101,9 +101,23 @@ function ServiceNodeComponent({ data, selected }) {
 
       {/* Target Badge */}
       {isTarget && (
-        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-rose-600 text-white text-[10px] font-bold tracking-wider uppercase flex items-center gap-1 shadow-md shadow-rose-950">
-          <Radio className="w-2.5 h-2.5 animate-pulse" />
-          <span>FAULT TARGET</span>
+        <div
+          className={`absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-white text-[10px] font-bold tracking-wider uppercase flex items-center gap-1 shadow-md ${
+            data.recovered
+              ? 'bg-emerald-600 shadow-emerald-950 border border-emerald-400/40'
+              : 'bg-rose-600 shadow-rose-950 animate-pulse border border-rose-400/50'
+          }`}
+        >
+          <Radio className="w-2.5 h-2.5" />
+          <span>{data.recovered ? 'FAULT TARGET (RECOVERED)' : 'FAULT TARGET'}</span>
+        </div>
+      )}
+
+      {/* Cascading Delays Badge for downstream affected services */}
+      {!isTarget && isAffected && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[9px] font-bold tracking-wider uppercase flex items-center gap-1 shadow-md shadow-amber-950 border border-amber-300">
+          <AlertTriangle className="w-2.5 h-2.5" />
+          <span>CASCADING DELAYS</span>
         </div>
       )}
 

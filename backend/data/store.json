@@ -1,6 +1,52 @@
 {
   "applications": [
     {
+      "id": "app-1a18ae250da",
+      "name": "test2",
+      "status": "Connected",
+      "statusType": "healthy",
+      "description": "Distributed payment orchestration cluster with Postgres and worker replicas.",
+      "environment": "Testing (Isolated Sandbox)",
+      "isolation": "Strict Container Isolation Enabled",
+      "servicesCount": 5,
+      "dependenciesCount": 5,
+      "experimentsCount": 0,
+      "activeIssues": 0,
+      "lastExperiment": {
+        "name": "None",
+        "status": "Unexercised",
+        "result": "Ready for initial test",
+        "time": "Just now"
+      },
+      "lastUpdated": "Just now",
+      "repository": "Uploaded local docker-compose.yml",
+      "composeFile": "docker-compose.yml",
+      "composeYaml": "version: \"3.9\"\n\nservices:\n  frontend:\n    image: nginx:latest\n    ports:\n      - \"80:80\"\n    depends_on:\n      - backend\n\n  backend:\n    build: ./backend\n    ports:\n      - \"8000:8000\"\n    environment:\n      DATABASE_URL: postgres://user:password@db:5432/appdb\n      REDIS_URL: redis://cache:6379\n    depends_on:\n      - db\n      - cache\n\n  db:\n    image: postgres:15\n    environment:\n      POSTGRES_DB: appdb\n      POSTGRES_USER: user\n      POSTGRES_PASSWORD: password\n    volumes:\n      - postgres_data:/var/lib/postgresql/data\n\n  cache:\n    image: redis:7\n    ports:\n      - \"6379:6379\"\n\n  worker:\n    build: ./worker\n    environment:\n      DATABASE_URL: postgres://user:password@db:5432/appdb\n      REDIS_URL: redis://cache:6379\n    depends_on:\n      - db\n      - cache\n\nvolumes:\n  postgres_data:"
+    },
+    {
+      "id": "app-1a18ac40817",
+      "name": "MicroCart",
+      "status": "Connected",
+      "statusType": "healthy",
+      "description": "Distributed payment orchestration cluster with Postgres and worker replicas.",
+      "environment": "Testing (Isolated Sandbox)",
+      "isolation": "Strict Container Isolation Enabled",
+      "servicesCount": 19,
+      "dependenciesCount": 23,
+      "experimentsCount": 0,
+      "activeIssues": 0,
+      "lastExperiment": {
+        "name": "None",
+        "status": "Unexercised",
+        "result": "Ready for initial test",
+        "time": "Just now"
+      },
+      "lastUpdated": "Just now",
+      "repository": "Uploaded local docker-compose.yml",
+      "composeFile": "docker-compose.yml",
+      "composeYaml": "version: \"3.9\"\n\nservices:\n  api-gateway:\n    image: nginx:latest\n    ports:\n      - \"80:80\"\n    depends_on:\n      auth-service:\n        condition: service_started\n      user-service:\n        condition: service_started\n      order-service:\n        condition: service_started\n      inventory-service:\n        condition: service_started\n    networks:\n      - frontend\n      - backend\n\n  frontend:\n    image: node:20\n    working_dir: /app\n    volumes:\n      - ./frontend:/app\n    command: npm run dev\n    ports:\n      - \"3000:3000\"\n    depends_on:\n      api-gateway:\n        condition: service_started\n    networks:\n      - frontend\n\n  auth-service:\n    build: ./services/auth\n    environment:\n      DATABASE_URL: postgres://auth:pass@auth-db:5432/auth\n      REDIS_URL: redis://redis:6379\n      JWT_SECRET: secret_key\n    depends_on:\n      auth-db:\n        condition: service_healthy\n      redis:\n        condition: service_started\n    networks:\n      - backend\n\n  user-service:\n    build: ./services/user\n    environment:\n      DATABASE_URL: postgres://user:pass@user-db:5432/user\n      AUTH_SERVICE_URL: http://auth-service:8000\n    depends_on:\n      user-db:\n        condition: service_healthy\n      auth-service:\n        condition: service_started\n    networks:\n      - backend\n\n  inventory-service:\n    build: ./services/inventory\n    environment:\n      DATABASE_URL: mongodb://inventory-db:27017/inventory\n      KAFKA_BOOTSTRAP_SERVERS: kafka:9092\n    depends_on:\n      inventory-db:\n        condition: service_started\n      kafka:\n        condition: service_started\n    networks:\n      - backend\n\n  order-service:\n    build: ./services/order\n    environment:\n      DATABASE_URL: postgres://order:pass@order-db:5432/order\n      USER_SERVICE_URL: http://user-service:8000\n      INVENTORY_SERVICE_URL: http://inventory-service:8000\n      KAFKA_BOOTSTRAP_SERVERS: kafka:9092\n    depends_on:\n      order-db:\n        condition: service_healthy\n      user-service:\n        condition: service_started\n      inventory-service:\n        condition: service_started\n      kafka:\n        condition: service_started\n    networks:\n      - backend\n\n  payment-service:\n    build: ./services/payment\n    environment:\n      DATABASE_URL: postgres://payment:pass@payment-db:5432/payment\n      ORDER_SERVICE_URL: http://order-service:8000\n    depends_on:\n      payment-db:\n        condition: service_healthy\n      order-service:\n        condition: service_started\n    networks:\n      - backend\n\n  notification-service:\n    build: ./services/notification\n    environment:\n      REDIS_URL: redis://redis:6379\n      KAFKA_BOOTSTRAP_SERVERS: kafka:9092\n      SMTP_HOST: mailhog\n    depends_on:\n      redis:\n        condition: service_started\n      kafka:\n        condition: service_started\n      mailhog:\n        condition: service_started\n    networks:\n      - backend\n\n  analytics-service:\n    build: ./services/analytics\n    environment:\n      CLICKHOUSE_URL: http://clickhouse:8123\n      KAFKA_BOOTSTRAP_SERVERS: kafka:9092\n    depends_on:\n      kafka:\n        condition: service_started\n      clickhouse:\n        condition: service_started\n    networks:\n      - backend\n\n  auth-db:\n    image: postgres:15\n    environment:\n      POSTGRES_DB: auth\n      POSTGRES_USER: auth\n      POSTGRES_PASSWORD: pass\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U auth\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n    networks:\n      - backend\n\n  user-db:\n    image: postgres:15\n    environment:\n      POSTGRES_DB: user\n      POSTGRES_USER: user\n      POSTGRES_PASSWORD: pass\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U user\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n    networks:\n      - backend\n\n  order-db:\n    image: postgres:15\n    environment:\n      POSTGRES_DB: order\n      POSTGRES_USER: order\n      POSTGRES_PASSWORD: pass\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U order\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n    networks:\n      - backend\n\n  payment-db:\n    image: postgres:15\n    environment:\n      POSTGRES_DB: payment\n      POSTGRES_USER: payment\n      POSTGRES_PASSWORD: pass\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U payment\"]\n      interval: 10s\n      timeout: 5s\n      retries: 5\n    networks:\n      - backend\n\n  inventory-db:\n    image: mongo:7\n    volumes:\n      - inventory_data:/data/db\n    networks:\n      - backend\n\n  redis:\n    image: redis:7\n    ports:\n      - \"6379:6379\"\n    networks:\n      - backend\n\n  zookeeper:\n    image: confluentinc/cp-zookeeper:latest\n    environment:\n      ZOOKEEPER_CLIENT_PORT: 2181\n    networks:\n      - backend\n\n  kafka:\n    image: confluentinc/cp-kafka:latest\n    depends_on:\n      zookeeper:\n        condition: service_started\n    environment:\n      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181\n      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092\n      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1\n    networks:\n      - backend\n\n  clickhouse:\n    image: clickhouse/clickhouse-server:latest\n    ports:\n      - \"8123:8123\"\n    networks:\n      - backend\n\n  mailhog:\n    image: mailhog/mailhog\n    ports:\n      - \"8025:8025\"\n    networks:\n      - backend\n\nnetworks:\n  frontend:\n  backend:\n\nvolumes:\n  inventory_data:"
+    },
+    {
       "id": "app-1a1204bcde7",
       "name": "Demo app",
       "status": "Connected",
@@ -1045,6 +1091,601 @@
         "description": "Isolated container service derived from docker-compose (database).",
         "runtime": "Docker / postgres:16-alpine",
         "containerId": "cnt_database"
+      }
+    ],
+    "app-1a18ac40817": [
+      {
+        "id": "api-gateway",
+        "name": "Api Gateway",
+        "type": "Gateway",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 80,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "auth-service",
+          "user-service",
+          "order-service",
+          "inventory-service"
+        ],
+        "dependents": [
+          "frontend"
+        ],
+        "description": "Isolated container service derived from docker-compose (api-gateway).",
+        "runtime": "Docker / nginx:latest",
+        "containerId": "cnt_api-gate"
+      },
+      {
+        "id": "frontend",
+        "name": "Frontend",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 3000,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "api-gateway"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (frontend).",
+        "runtime": "Docker / node:20",
+        "containerId": "cnt_frontend"
+      },
+      {
+        "id": "auth-service",
+        "name": "Auth Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8083,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "auth-db",
+          "redis"
+        ],
+        "dependents": [
+          "api-gateway",
+          "user-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (auth-service).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_auth-ser"
+      },
+      {
+        "id": "user-service",
+        "name": "User Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8084,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "user-db",
+          "auth-service"
+        ],
+        "dependents": [
+          "api-gateway",
+          "order-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (user-service).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_user-ser"
+      },
+      {
+        "id": "inventory-service",
+        "name": "Inventory Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8085,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "inventory-db",
+          "kafka"
+        ],
+        "dependents": [
+          "api-gateway",
+          "order-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (inventory-service).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_inventor"
+      },
+      {
+        "id": "order-service",
+        "name": "Order Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8086,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "order-db",
+          "user-service",
+          "inventory-service",
+          "kafka"
+        ],
+        "dependents": [
+          "api-gateway",
+          "payment-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (order-service).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_order-se"
+      },
+      {
+        "id": "payment-service",
+        "name": "Payment Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8087,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "payment-db",
+          "order-service"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (payment-service).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_payment-"
+      },
+      {
+        "id": "notification-service",
+        "name": "Notification Service",
+        "type": "Worker",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8088,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "redis",
+          "kafka",
+          "mailhog"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (notification-service).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_notifica"
+      },
+      {
+        "id": "analytics-service",
+        "name": "Analytics Service",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8089,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "kafka",
+          "clickhouse"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (analytics-service).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_analytic"
+      },
+      {
+        "id": "auth-db",
+        "name": "Auth Db",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 5432,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "auth-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (auth-db).",
+        "runtime": "Docker / postgres:15",
+        "containerId": "cnt_auth-db"
+      },
+      {
+        "id": "user-db",
+        "name": "User Db",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 5433,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "user-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (user-db).",
+        "runtime": "Docker / postgres:15",
+        "containerId": "cnt_user-db"
+      },
+      {
+        "id": "order-db",
+        "name": "Order Db",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 5434,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "order-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (order-db).",
+        "runtime": "Docker / postgres:15",
+        "containerId": "cnt_order-db"
+      },
+      {
+        "id": "payment-db",
+        "name": "Payment Db",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 5435,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "payment-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (payment-db).",
+        "runtime": "Docker / postgres:15",
+        "containerId": "cnt_payment-"
+      },
+      {
+        "id": "inventory-db",
+        "name": "Inventory Db",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 27017,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "inventory-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (inventory-db).",
+        "runtime": "Docker / mongo:7",
+        "containerId": "cnt_inventor"
+      },
+      {
+        "id": "redis",
+        "name": "Redis",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 6379,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "auth-service",
+          "notification-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (redis).",
+        "runtime": "Docker / redis:7",
+        "containerId": "cnt_redis"
+      },
+      {
+        "id": "zookeeper",
+        "name": "Zookeeper",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8096,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "kafka"
+        ],
+        "description": "Isolated container service derived from docker-compose (zookeeper).",
+        "runtime": "Docker / confluentinc/cp-zookeeper:latest",
+        "containerId": "cnt_zookeepe"
+      },
+      {
+        "id": "kafka",
+        "name": "Kafka",
+        "type": "Worker",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 9092,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "zookeeper"
+        ],
+        "dependents": [
+          "inventory-service",
+          "order-service",
+          "notification-service",
+          "analytics-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (kafka).",
+        "runtime": "Docker / confluentinc/cp-kafka:latest",
+        "containerId": "cnt_kafka"
+      },
+      {
+        "id": "clickhouse",
+        "name": "Clickhouse",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8123,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "analytics-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (clickhouse).",
+        "runtime": "Docker / clickhouse/clickhouse-server:latest",
+        "containerId": "cnt_clickhou"
+      },
+      {
+        "id": "mailhog",
+        "name": "Mailhog",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8025,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "notification-service"
+        ],
+        "description": "Isolated container service derived from docker-compose (mailhog).",
+        "runtime": "Docker / mailhog/mailhog",
+        "containerId": "cnt_mailhog"
+      }
+    ],
+    "app-1a18ae250da": [
+      {
+        "id": "frontend",
+        "name": "Frontend",
+        "type": "Gateway",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 80,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "backend"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (frontend).",
+        "runtime": "Docker / nginx:latest",
+        "containerId": "cnt_frontend"
+      },
+      {
+        "id": "backend",
+        "name": "Backend",
+        "type": "Microservice",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8000,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "db",
+          "cache"
+        ],
+        "dependents": [
+          "frontend"
+        ],
+        "description": "Isolated container service derived from docker-compose (backend).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_backend"
+      },
+      {
+        "id": "db",
+        "name": "Db",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 5432,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "backend",
+          "worker"
+        ],
+        "description": "Isolated container service derived from docker-compose (db).",
+        "runtime": "Docker / postgres:15",
+        "containerId": "cnt_db"
+      },
+      {
+        "id": "cache",
+        "name": "Cache",
+        "type": "Database",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 6379,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [],
+        "dependents": [
+          "backend",
+          "worker"
+        ],
+        "description": "Isolated container service derived from docker-compose (cache).",
+        "runtime": "Docker / redis:7",
+        "containerId": "cnt_cache"
+      },
+      {
+        "id": "worker",
+        "name": "Worker",
+        "type": "Worker",
+        "status": "healthy",
+        "statusLabel": "Healthy",
+        "port": 8085,
+        "protocol": "HTTP / REST",
+        "cpu": "18%",
+        "memory": "32%",
+        "responseTime": "24ms",
+        "baselineResponseTime": "20ms",
+        "errorRate": "0.0%",
+        "baselineErrorRate": "0.0%",
+        "requestRate": "320 req/s",
+        "dependencies": [
+          "db",
+          "cache"
+        ],
+        "dependents": [],
+        "description": "Isolated container service derived from docker-compose (worker).",
+        "runtime": "Docker / Container",
+        "containerId": "cnt_worker"
       }
     ]
   },
@@ -2222,9 +2863,904 @@
           }
         }
       ]
+    },
+    "app-1a18ac40817": {
+      "nodes": [
+        {
+          "id": "api-gateway",
+          "type": "serviceNode",
+          "position": {
+            "x": 140,
+            "y": 30
+          },
+          "data": {
+            "label": "Api Gateway",
+            "serviceType": "Gateway",
+            "status": "healthy",
+            "port": 80,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "frontend",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 170
+          },
+          "data": {
+            "label": "Frontend",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 3000,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "auth-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 380,
+            "y": 170
+          },
+          "data": {
+            "label": "Auth Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8083,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "user-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 640,
+            "y": 170
+          },
+          "data": {
+            "label": "User Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8084,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "inventory-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 860,
+            "y": 170
+          },
+          "data": {
+            "label": "Inventory Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8085,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "order-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 1120,
+            "y": 170
+          },
+          "data": {
+            "label": "Order Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8086,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "payment-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 1340,
+            "y": 170
+          },
+          "data": {
+            "label": "Payment Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8087,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "notification-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 320
+          },
+          "data": {
+            "label": "Notification Service",
+            "serviceType": "Worker",
+            "status": "healthy",
+            "port": 8088,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "analytics-service",
+          "type": "serviceNode",
+          "position": {
+            "x": 1580,
+            "y": 170
+          },
+          "data": {
+            "label": "Analytics Service",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8089,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "auth-db",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 470
+          },
+          "data": {
+            "label": "Auth Db",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 5432,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "user-db",
+          "type": "serviceNode",
+          "position": {
+            "x": 380,
+            "y": 470
+          },
+          "data": {
+            "label": "User Db",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 5433,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "order-db",
+          "type": "serviceNode",
+          "position": {
+            "x": 640,
+            "y": 470
+          },
+          "data": {
+            "label": "Order Db",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 5434,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "payment-db",
+          "type": "serviceNode",
+          "position": {
+            "x": 860,
+            "y": 470
+          },
+          "data": {
+            "label": "Payment Db",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 5435,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "inventory-db",
+          "type": "serviceNode",
+          "position": {
+            "x": 1120,
+            "y": 470
+          },
+          "data": {
+            "label": "Inventory Db",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 27017,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "redis",
+          "type": "serviceNode",
+          "position": {
+            "x": 1340,
+            "y": 470
+          },
+          "data": {
+            "label": "Redis",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 6379,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "zookeeper",
+          "type": "serviceNode",
+          "position": {
+            "x": 1840,
+            "y": 170
+          },
+          "data": {
+            "label": "Zookeeper",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8096,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "kafka",
+          "type": "serviceNode",
+          "position": {
+            "x": 380,
+            "y": 320
+          },
+          "data": {
+            "label": "Kafka",
+            "serviceType": "Worker",
+            "status": "healthy",
+            "port": 9092,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "clickhouse",
+          "type": "serviceNode",
+          "position": {
+            "x": 2080,
+            "y": 170
+          },
+          "data": {
+            "label": "Clickhouse",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8123,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "mailhog",
+          "type": "serviceNode",
+          "position": {
+            "x": 2300,
+            "y": 170
+          },
+          "data": {
+            "label": "Mailhog",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8025,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e-api-gateway-auth-service",
+          "source": "api-gateway",
+          "target": "auth-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-api-gateway-user-service",
+          "source": "api-gateway",
+          "target": "user-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-api-gateway-order-service",
+          "source": "api-gateway",
+          "target": "order-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-api-gateway-inventory-service",
+          "source": "api-gateway",
+          "target": "inventory-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-frontend-api-gateway",
+          "source": "frontend",
+          "target": "api-gateway",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-auth-service-auth-db",
+          "source": "auth-service",
+          "target": "auth-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-auth-service-redis",
+          "source": "auth-service",
+          "target": "redis",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-user-service-user-db",
+          "source": "user-service",
+          "target": "user-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-user-service-auth-service",
+          "source": "user-service",
+          "target": "auth-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-inventory-service-inventory-db",
+          "source": "inventory-service",
+          "target": "inventory-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-inventory-service-kafka",
+          "source": "inventory-service",
+          "target": "kafka",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-order-service-order-db",
+          "source": "order-service",
+          "target": "order-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-order-service-user-service",
+          "source": "order-service",
+          "target": "user-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-order-service-inventory-service",
+          "source": "order-service",
+          "target": "inventory-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-order-service-kafka",
+          "source": "order-service",
+          "target": "kafka",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-payment-service-payment-db",
+          "source": "payment-service",
+          "target": "payment-db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-payment-service-order-service",
+          "source": "payment-service",
+          "target": "order-service",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-notification-service-redis",
+          "source": "notification-service",
+          "target": "redis",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-notification-service-kafka",
+          "source": "notification-service",
+          "target": "kafka",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-notification-service-mailhog",
+          "source": "notification-service",
+          "target": "mailhog",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-analytics-service-kafka",
+          "source": "analytics-service",
+          "target": "kafka",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-analytics-service-clickhouse",
+          "source": "analytics-service",
+          "target": "clickhouse",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-kafka-zookeeper",
+          "source": "kafka",
+          "target": "zookeeper",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        }
+      ]
+    },
+    "app-1a18ae250da": {
+      "nodes": [
+        {
+          "id": "frontend",
+          "type": "serviceNode",
+          "position": {
+            "x": 140,
+            "y": 30
+          },
+          "data": {
+            "label": "Frontend",
+            "serviceType": "Gateway",
+            "status": "healthy",
+            "port": 80,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "backend",
+          "type": "serviceNode",
+          "position": {
+            "x": 160,
+            "y": 170
+          },
+          "data": {
+            "label": "Backend",
+            "serviceType": "Microservice",
+            "status": "healthy",
+            "port": 8000,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "db",
+          "type": "serviceNode",
+          "position": {
+            "x": 140,
+            "y": 470
+          },
+          "data": {
+            "label": "Db",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 5432,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "cache",
+          "type": "serviceNode",
+          "position": {
+            "x": 400,
+            "y": 470
+          },
+          "data": {
+            "label": "Cache",
+            "serviceType": "Database",
+            "status": "healthy",
+            "port": 6379,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        },
+        {
+          "id": "worker",
+          "type": "serviceNode",
+          "position": {
+            "x": 140,
+            "y": 320
+          },
+          "data": {
+            "label": "Worker",
+            "serviceType": "Worker",
+            "status": "healthy",
+            "port": 8085,
+            "responseTime": "24ms",
+            "errorRate": "0.0%",
+            "isTarget": false,
+            "isAffected": false
+          }
+        }
+      ],
+      "edges": [
+        {
+          "id": "e-frontend-backend",
+          "source": "frontend",
+          "target": "backend",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-backend-db",
+          "source": "backend",
+          "target": "db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-backend-cache",
+          "source": "backend",
+          "target": "cache",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-worker-db",
+          "source": "worker",
+          "target": "db",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        },
+        {
+          "id": "e-worker-cache",
+          "source": "worker",
+          "target": "cache",
+          "animated": false,
+          "className": "",
+          "style": {
+            "stroke": "#334155",
+            "strokeWidth": 1.5
+          }
+        }
+      ]
     }
   },
   "experiments": [
+    {
+      "id": "exp-d4304a145309",
+      "name": "Db Service Failure Simulation",
+      "applicationId": "app-1a18ae250da",
+      "applicationName": "test2",
+      "targetServiceId": "db",
+      "targetServiceName": "Db",
+      "faultType": "Service Failure",
+      "severity": "High",
+      "duration": 60,
+      "elapsed": 60,
+      "status": "Recovered",
+      "result": "Experiment window ended; service recovered and final impact preserved",
+      "confidence": "Evaluated (Active Topology)",
+      "date": "Just now",
+      "timestamp": "2026-10-30T09:08:00.676017+05:30",
+      "description": "Simulate a payment service outage in the staging sandbox to observe checkout failure cascades.",
+      "environment": "Docker Compose (Isolated)",
+      "dockerFaultExecuted": false,
+      "affectedServices": [
+        "backend",
+        "worker",
+        "frontend"
+      ],
+      "levelMap": {
+        "db": 0,
+        "backend": 1,
+        "worker": 1,
+        "frontend": 2
+      },
+      "timestampUpdated": "2026-10-30T09:10:38.060259+05:30"
+    },
+    {
+      "id": "exp-f494cdae829f",
+      "name": "Payment Service Service Failure Test",
+      "applicationId": "app-ecommerce",
+      "applicationName": "MicroCart",
+      "targetServiceId": "payment-service",
+      "targetServiceName": "Payment Service",
+      "faultType": "Service Failure",
+      "severity": "High",
+      "duration": 30,
+      "elapsed": 0,
+      "status": "Recovered",
+      "result": "Stopped by Operator; target service recovered",
+      "confidence": "Evaluated (Active Topology)",
+      "date": "Just now",
+      "timestamp": "2026-10-30T09:02:54.415273+05:30",
+      "description": "",
+      "environment": "Docker Compose (Isolated)",
+      "dockerFaultExecuted": false,
+      "affectedServices": [
+        "order-service",
+        "api-gateway",
+        "external-clients"
+      ],
+      "levelMap": {
+        "payment-service": 0,
+        "order-service": 1,
+        "api-gateway": 2,
+        "external-clients": 3
+      },
+      "timestampUpdated": "2026-10-30T09:02:56.452332+05:30"
+    },
+    {
+      "id": "exp-4537fd5d84c7",
+      "name": "Auth Db Service Failure Simulation",
+      "applicationId": "app-1a18ac40817",
+      "applicationName": "MicroCart",
+      "targetServiceId": "auth-db",
+      "targetServiceName": "Auth Db",
+      "faultType": "Service Failure",
+      "severity": "High",
+      "duration": 30,
+      "elapsed": 30,
+      "status": "Recovered",
+      "result": "Experiment window ended; service recovered and final impact preserved",
+      "confidence": "Evaluated (Active Topology)",
+      "date": "Just now",
+      "timestamp": "2026-10-30T08:58:20.282209+05:30",
+      "description": "Simulate a payment service outage in the staging sandbox to observe checkout failure cascades.",
+      "environment": "Docker Compose (Isolated)",
+      "dockerFaultExecuted": false,
+      "affectedServices": [
+        "auth-service",
+        "api-gateway",
+        "user-service",
+        "frontend",
+        "order-service",
+        "payment-service"
+      ],
+      "levelMap": {
+        "auth-db": 0,
+        "auth-service": 1,
+        "api-gateway": 2,
+        "user-service": 2,
+        "frontend": 3,
+        "order-service": 3,
+        "payment-service": 4
+      },
+      "timestampUpdated": "2026-10-30T08:58:50.801186+05:30"
+    },
+    {
+      "id": "exp-f401f3441a49",
+      "name": "Api Gateway Service Failure Simulation",
+      "applicationId": "app-1a18ac40817",
+      "applicationName": "MicroCart",
+      "targetServiceId": "api-gateway",
+      "targetServiceName": "Api Gateway",
+      "faultType": "Service Failure",
+      "severity": "High",
+      "duration": 30,
+      "elapsed": 30,
+      "status": "Completed",
+      "result": "Experiment window ended; no actual fault was executed",
+      "confidence": "Not evaluated",
+      "date": "Just now",
+      "timestamp": "2026-10-30T08:35:44.417561+05:30",
+      "description": "Simulate a payment service outage in the staging sandbox to observe checkout failure cascades.",
+      "environment": "Docker Compose (Isolated)",
+      "dockerFaultExecuted": false,
+      "timestampUpdated": "2026-10-30T08:36:15.022627+05:30"
+    },
+    {
+      "id": "exp-d8eaceed3080",
+      "name": "Api Gateway Service Failure Simulation",
+      "applicationId": "app-1a18ac40817",
+      "applicationName": "MicroCart",
+      "targetServiceId": "api-gateway",
+      "targetServiceName": "Api Gateway",
+      "faultType": "Service Failure",
+      "severity": "High",
+      "duration": 60,
+      "elapsed": 0,
+      "status": "Running",
+      "result": "Experiment record created; fault execution not implemented",
+      "confidence": "Not evaluated",
+      "date": "Just now",
+      "timestamp": "2026-10-30T08:35:23.933602+05:30",
+      "description": "Simulate a payment service outage in the staging sandbox to observe checkout failure cascades.",
+      "environment": "Docker Compose (Isolated)",
+      "dockerFaultExecuted": false
+    },
     {
       "id": "exp-06de5085b95a",
       "name": "Database Failure Test",

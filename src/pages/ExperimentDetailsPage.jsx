@@ -5,8 +5,10 @@ import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '../co
 import { Button } from '../components/ui/Button';
 import { Badge } from '../components/ui/Badge';
 import { LoadingSpinner } from '../components/ui/Loading';
+import { DependencyGraph } from '../components/graph/DependencyGraph';
 import { useToast } from '../context/ToastContext';
 import { experimentService } from '../services/experimentService';
+import { applicationService } from '../services/applicationService';
 import {
   Flame,
   Radio,
@@ -19,7 +21,9 @@ import {
   CheckCircle2,
   AlertTriangle,
   ArrowRight,
-  Shield
+  Shield,
+  Layers,
+  GitFork
 } from 'lucide-react';
 
 export function ExperimentDetailsPage() {
@@ -33,6 +37,8 @@ export function ExperimentDetailsPage() {
   const [elapsed, setElapsed] = useState(0);
   const [duration, setDuration] = useState(60);
   const [isRunning, setIsRunning] = useState(false);
+  const [graphData, setGraphData] = useState({ nodes: [], edges: [] });
+  const [services, setServices] = useState([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -50,6 +56,22 @@ export function ExperimentDetailsPage() {
           const running = exp.status === 'Running';
           setIsRunning(running);
           setElapsed(exp.elapsed || 0);
+
+          // Fetch topological graph and service definitions for the application
+          if (exp.applicationId) {
+            try {
+              const [deps, srvs] = await Promise.all([
+                applicationService.getDependencies(exp.applicationId),
+                applicationService.getServices(exp.applicationId),
+              ]);
+              if (isMounted) {
+                setGraphData(deps || { nodes: [], edges: [] });
+                setServices(srvs || []);
+              }
+            } catch (err) {
+              console.error('Failed to load application topology for experiment', err);
+            }
+          }
         }
       } catch (e) {
         console.error('Failed to load experiment details', e);
@@ -63,58 +85,56 @@ export function ExperimentDetailsPage() {
     };
   }, [id]);
 
-
-const handleStop = async () => {
-  try {
-    const updated = await experimentService.stopExperiment(id);
-    setExperiment(updated);
-    setIsRunning(false);
-    addToast(
-      'Experiment Stopped',
-      updated.result || 'Experiment stopped successfully.',
-      'warning'
-    );
-  } catch (e) {
-    addToast('Error', e.message, 'error');
-  }
-};
+  const handleStop = async () => {
+    try {
+      const updated = await experimentService.stopExperiment(id);
+      setExperiment(updated);
+      setIsRunning(false);
+      addToast(
+        'Experiment Stopped',
+        updated.result || 'Experiment stopped and target service recovered.',
+        'warning'
+      );
+    } catch (e) {
+      addToast('Error', e.message, 'error');
+    }
+  };
 
   // Live timer interval if experiment is running
-  
-useEffect(() => {
-  if (!isRunning || elapsed >= duration) return;
+  useEffect(() => {
+    if (!isRunning || elapsed >= duration) return;
 
-  const interval = setInterval(() => {
-    setElapsed((prev) => Math.min(prev + 1, duration));
-  }, 1000);
+    const interval = setInterval(() => {
+      setElapsed((prev) => Math.min(prev + 1, duration));
+    }, 1000);
 
-  return () => clearInterval(interval);
-}, [isRunning, elapsed, duration]);
+    return () => clearInterval(interval);
+  }, [isRunning, elapsed, duration]);
 
-useEffect(() => {
-  if (!isRunning || elapsed < duration) return;
+  useEffect(() => {
+    if (!isRunning || elapsed < duration) return;
 
-  let cancelled = false;
+    let cancelled = false;
 
-  async function completeExperiment() {
-    try {
-      const updated = await experimentService.completeExperiment(id);
+    async function completeExperiment() {
+      try {
+        const updated = await experimentService.completeExperiment(id);
 
-      if (!cancelled) {
-        setExperiment(updated);
-        setIsRunning(false);
-        addToast(
-          'Experiment Window Ended',
-          updated.result || 'Experiment window ended.',
-          'info'
-      );
-      }
-    } catch (e) {
-      if (!cancelled) {
-        addToast('Status Update Failed', e.message, 'error');
+        if (!cancelled) {
+          setExperiment(updated);
+          setIsRunning(false);
+          addToast(
+            'Experiment Recovered',
+            updated.result || 'Experiment window ended and service recovered.',
+            'info'
+          );
+        }
+      } catch (e) {
+        if (!cancelled) {
+          addToast('Status Update Failed', e.message, 'error');
+        }
       }
     }
-  }
 
     completeExperiment();
 
@@ -139,8 +159,12 @@ useEffect(() => {
     );
   }
 
+  const isRecovered =
+    experiment?.status === 'Recovered' ||
+    experiment?.status === 'Completed';
+
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
+    <div className="space-y-6 max-w-6xl mx-auto">
       {/* Header */}
       <PageHeader
         title={experiment?.name || 'Controlled Resilience Test'}
@@ -150,16 +174,27 @@ useEffect(() => {
           { label: experiment?.name || 'Experiment Details' }
         ]}
         badge={
-          <Badge variant={isRunning ? 'running' : 'completed'} size="sm">
-            
-          {isRunning
-            ? (experiment?.dockerFaultExecuted
-              ? '● RUNNING - FAULT INJECTED'
-              : '● RUNNING')
-            : (experiment?.result === 'Stopped by Operator'
-              ? 'STOPPED'
-              : (experiment?.status || 'COMPLETED').toUpperCase())}
-
+          <Badge
+            variant={
+              isRunning
+                ? 'running'
+                : isRecovered
+                ? 'healthy'
+                : experiment?.status === 'Failed'
+                ? 'critical'
+                : 'completed'
+            }
+            size="sm"
+          >
+            {isRunning
+              ? (experiment?.dockerFaultExecuted
+                ? '● RUNNING - FAULT INJECTED'
+                : '● RUNNING')
+              : isRecovered
+              ? 'RECOVERED'
+              : (experiment?.result === 'Stopped by Operator'
+                ? 'STOPPED'
+                : (experiment?.status || 'COMPLETED').toUpperCase())}
           </Badge>
         }
         actions={
@@ -213,7 +248,7 @@ useEffect(() => {
               {formatSeconds(remaining)}
             </p>
             <span className="text-[11px] text-slate-500 font-mono">
-              {remaining === 0 ? 'Teardown Completed' : 'Configured Window'}
+              {remaining === 0 ? 'Recovery Completed' : 'Configured Window'}
             </span>
           </div>
         </div>
@@ -229,6 +264,49 @@ useEffect(() => {
         </div>
       </div>
 
+      {/* FAULT INJECTION DEPENDENCY GRAPH VISUALIZATION */}
+      <Card className="overflow-hidden border border-slate-800/80 shadow-2xl">
+        <CardHeader className="bg-space-900/50 border-b border-slate-800/80">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div>
+              <CardTitle className="flex items-center gap-2 text-base">
+                <GitFork className="w-4 h-4 text-brand-cyan rotate-90" />
+                <span>Fault Injection Dependency Graph</span>
+                <span className="text-xs font-mono font-normal text-slate-400">
+                  (Blast Radius Traversal)
+                </span>
+              </CardTitle>
+              <CardDescription>
+                Live topological failure cascade: Target service highlighted in red; downstream callers and connecting edges progressively traversed. Unaffected services remain healthy.
+              </CardDescription>
+            </div>
+            <div className="flex items-center gap-2">
+              <Badge
+                variant={isRunning ? 'running' : isRecovered ? 'healthy' : 'critical'}
+                size="sm"
+              >
+                {isRunning
+                  ? '● TRAVERSING BLAST RADIUS'
+                  : isRecovered
+                  ? 'RECOVERED — IMPACT PRESERVED'
+                  : (experiment?.status || 'COMPLETED').toUpperCase() + ' — IMPACT PRESERVED'}
+              </Badge>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent className="p-0">
+          <DependencyGraph
+            initialNodes={graphData.nodes}
+            initialEdges={graphData.edges}
+            servicesData={services}
+            activeExperiment={experiment}
+            elapsed={elapsed}
+            height="h-[560px]"
+            showControls={true}
+          />
+        </CardContent>
+      </Card>
+
       {/* LIVE EVENT LOG & TELEMETRY TIMELINE */}
       <Card>
         <CardHeader>
@@ -238,8 +316,8 @@ useEffect(() => {
               <CardDescription>Chronological sequence of fault injection events and downstream telemetry</CardDescription>
             </div>
             <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-              <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Telemetry Not Connected</span>
+              <span className={`w-2 h-2 rounded-full ${isRunning ? 'bg-rose-500 animate-pulse' : 'bg-emerald-400'}`} />
+              <span>{isRunning ? 'Telemetry Live Stream Active' : 'Teardown Completed'}</span>
             </div>
           </div>
         </CardHeader>
@@ -272,21 +350,21 @@ useEffect(() => {
 
       {/* POST-EXPERIMENT ACTION BAR */}
       {!isRunning && (
-        <div className="p-5 rounded-xl bg-space-900 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="p-5 rounded-xl bg-space-900 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg">
           <div>
-            
-            <h4 className="text-sm font-bold text-white">
-              {experiment?.result === 'Stopped by Operator'
-                ? 'Experiment Stopped'
-                : 'Experiment Window Ended'}
+            <h4 className="text-sm font-bold text-white flex items-center gap-2">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+              <span>
+                {isRecovered
+                  ? 'Experiment Recovered — Impact Preserved'
+                  : experiment?.result === 'Stopped by Operator'
+                  ? 'Experiment Stopped — Impact Preserved'
+                  : 'Experiment Window Ended — Impact Preserved'}
+              </span>
             </h4>
-
-
             <p className="text-xs text-slate-400 mt-0.5">
-              {experiment?.result || 'Experiment completed.'}
-              {experiment?.dockerFaultExecuted &&
-                ' Frontend recovery was executed.'}
-              {' Root-cause analysis and AI remediation are not implemented yet.'}
+              {experiment?.result || 'Chaos injection completed and service recovered.'}
+              {' Final blast radius topology is preserved above for inspection and root-cause analysis.'}
             </p>
           </div>
           <div className="flex items-center gap-2">

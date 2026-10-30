@@ -335,6 +335,49 @@ class Store:
             return self.graph_store[app_id]
         return self.graph_store.get("app-ecommerce", {"nodes": [], "edges": []})
 
+    def compute_affected_services(self, app_id: str, target_service_id: str):
+        """
+        Traverses the dependency graph starting from target_service_id,
+        respecting dependency direction (identifying callers/dependents that depend on the failed service).
+        Returns (affected_services_list, level_map).
+        """
+        services = self.get_services(app_id)
+        graph = self.get_dependencies(app_id)
+        edges = graph.get("edges", [])
+
+        callers_map = {srv.get("id"): set() for srv in services}
+
+        for srv in services:
+            sid = srv.get("id")
+            for dep in srv.get("dependencies", []):
+                if dep in callers_map:
+                    callers_map[dep].add(sid)
+            for caller in srv.get("dependents", []):
+                if sid in callers_map:
+                    callers_map[sid].add(caller)
+
+        for edge in edges:
+            src = edge.get("source")
+            tgt = edge.get("target")
+            if tgt in callers_map and src in callers_map:
+                callers_map[tgt].add(src)
+
+        level_map = {target_service_id: 0}
+        queue = [target_service_id]
+        visited = {target_service_id}
+
+        while queue:
+            curr = queue.pop(0)
+            curr_level = level_map[curr]
+            for caller in callers_map.get(curr, set()):
+                if caller not in visited:
+                    visited.add(caller)
+                    level_map[caller] = curr_level + 1
+                    queue.append(caller)
+
+        affected = [sid for sid in level_map.keys() if sid != target_service_id]
+        return affected, level_map
+
     def add_application(self, name: str, description: str, environment: str, compose_yaml: str, isolation: bool = True) -> Dict[str, Any]:
         import time
         import uuid

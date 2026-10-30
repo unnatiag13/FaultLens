@@ -8,6 +8,7 @@ import { LoadingSpinner } from '../components/ui/Loading';
 import { useApp } from '../context/AppContext';
 import { useToast } from '../context/ToastContext';
 import { applicationService } from '../services/applicationService';
+import { experimentService } from '../services/experimentService';
 import {
   RotateCcw,
   Save,
@@ -16,7 +17,9 @@ import {
   Shield,
   Layers,
   Sparkles,
-  GitFork
+  GitFork,
+  Radio,
+  CheckCircle2
 } from 'lucide-react';
 
 export function DependencyGraphPage() {
@@ -30,17 +33,31 @@ export function DependencyGraphPage() {
   const [loading, setLoading] = useState(true);
   const [graphData, setGraphData] = useState({ nodes: [], edges: [] });
   const [services, setServices] = useState([]);
+  const [activeExperiment, setActiveExperiment] = useState(null);
+  const [elapsed, setElapsed] = useState(0);
   const [isSaving, setIsSaving] = useState(false);
 
   const fetchGraph = async () => {
     setLoading(true);
     try {
-      const [deps, srvs] = await Promise.all([
+      const [deps, srvs, exps] = await Promise.all([
         applicationService.getDependencies(appId),
         applicationService.getServices(appId),
+        experimentService.getExperiments(appId).catch(() => []),
       ]);
-      setGraphData(deps);
-      setServices(srvs);
+      setGraphData(deps || { nodes: [], edges: [] });
+      setServices(srvs || []);
+
+      // Find currently running experiment or most recent completed/recovered experiment
+      const running = exps.find((e) => e.status === 'Running');
+      const latest = running || (exps.length > 0 ? exps[0] : null);
+
+      setActiveExperiment(latest);
+      if (running) {
+        setElapsed(running.elapsed || 0);
+      } else if (latest) {
+        setElapsed(latest.duration || 60);
+      }
     } catch (e) {
       console.error('Failed to load dependency graph', e);
       addToast('Error', 'Unable to load service topology data', 'error');
@@ -52,6 +69,24 @@ export function DependencyGraphPage() {
   useEffect(() => {
     fetchGraph();
   }, [appId]);
+
+  // Live timer if an experiment is actively running for this application
+  useEffect(() => {
+    if (!activeExperiment || activeExperiment.status !== 'Running') return;
+
+    const duration = activeExperiment.duration || 60;
+    const interval = setInterval(() => {
+      setElapsed((prev) => {
+        if (prev >= duration) {
+          clearInterval(interval);
+          return duration;
+        }
+        return prev + 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [activeExperiment]);
 
   const handleSaveGraph = () => {
     setIsSaving(true);
@@ -69,6 +104,11 @@ export function DependencyGraphPage() {
     );
   }
 
+  const isRunning = activeExperiment?.status === 'Running';
+  const isRecovered =
+    activeExperiment?.status === 'Recovered' ||
+    activeExperiment?.status === 'Completed';
+
   return (
     <div className="space-y-4">
       {/* Header */}
@@ -81,8 +121,25 @@ export function DependencyGraphPage() {
           { label: 'Dependency Graph' }
         ]}
         badge={
-          <Badge variant="warning" size="sm">
-            Failure Cascade Active
+          <Badge
+            variant={
+              isRunning
+                ? 'running'
+                : isRecovered
+                ? 'healthy'
+                : activeExperiment
+                ? 'warning'
+                : 'operational'
+            }
+            size="sm"
+          >
+            {isRunning
+              ? '● RUNNING - FAULT INJECTED'
+              : isRecovered
+              ? 'RECOVERED — IMPACT PRESERVED'
+              : activeExperiment
+              ? 'Failure Cascade Active'
+              : 'Operational Topology'}
           </Badge>
         }
         actions={
@@ -110,7 +167,7 @@ export function DependencyGraphPage() {
               variant="primary"
               size="sm"
               icon={Flame}
-              onClick={() => navigate('/experiments/new')}
+              onClick={() => navigate(`/experiments/new?appId=${appId}`)}
             >
               Run Experiment
             </Button>
@@ -124,6 +181,8 @@ export function DependencyGraphPage() {
           initialNodes={graphData.nodes}
           initialEdges={graphData.edges}
           servicesData={services}
+          activeExperiment={activeExperiment}
+          elapsed={elapsed}
           height="h-[680px]"
           showControls={true}
         />
@@ -136,9 +195,13 @@ export function DependencyGraphPage() {
           <span>Non-destructive telemetry extraction. Socket communication monitored via network mirror proxy.</span>
         </div>
         <div className="flex items-center gap-4 text-[11px] text-slate-500">
-          <span>8 Active Nodes</span>
-          <span>11 Edge Links</span>
-          <span>FastAPI Gateway: 200 OK</span>
+          <span>{graphData.nodes.length} Active Nodes</span>
+          <span>{graphData.edges.length} Edge Links</span>
+          <span>
+            {activeExperiment
+              ? `Experiment: ${activeExperiment.name || activeExperiment.id} (${activeExperiment.status})`
+              : 'Topology Synchronized'}
+          </span>
         </div>
       </div>
     </div>
